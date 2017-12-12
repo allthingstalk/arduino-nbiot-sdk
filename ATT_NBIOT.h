@@ -1,22 +1,23 @@
-/*
-    Copyright (c) 2015-2016 Sodaq.  All rights reserved.
-
-    This file is part of Sodaq_nbIOT.
-
-    Sodaq_nbIOT is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or(at your option) any later version.
-
-    Sodaq_nbIOT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with Sodaq_nbIOT.  If not, see
-    <http://www.gnu.org/licenses/>.
-*/
+/*    _   _ _ _____ _    _              _____     _ _     ___ ___  _  __
+ *   /_\ | | |_   _| |_ (_)_ _  __ _ __|_   _|_ _| | |__ / __|   \| |/ /
+ *  / _ \| | | | | | ' \| | ' \/ _` (_-< | |/ _` | | / / \__ \ |) | ' <
+ * /_/ \_\_|_| |_| |_||_|_|_||_\__, /__/ |_|\__,_|_|_\_\ |___/___/|_|\_\
+ *                             |___/
+ *
+ * Copyright 2018 AllThingsTalk
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #ifndef _Sodaq_nbIOT_h
 #define _Sodaq_nbIOT_h
@@ -24,18 +25,17 @@
 #include "Arduino.h"
 #include "Sodaq_AT_Device.h"
 
-class Sodaq_nbIOT: public Sodaq_AT_Device
+class ATT_NBIOT: public Sodaq_AT_Device
 {
   public:
-    Sodaq_nbIOT();
+    ATT_NBIOT();
 
     enum SentMessageStatus {
-        Pending,
-        Error
+      Pending,
+      Error
     };
 
-    typedef ResponseTypes(*CallbackMethodPtr)(ResponseTypes& response, const char* buffer, size_t size,
-            void* parameter, void* parameter2);
+    typedef ResponseTypes(*CallbackMethodPtr)(ResponseTypes& response, const char* buffer, size_t size, void* parameter, void* parameter2);
 
     bool setRadioActive(bool on);
     bool setApn(const char* apn);
@@ -47,7 +47,7 @@ class Sodaq_nbIOT: public Sodaq_AT_Device
     // To be used when initializing the modem stream for the first time.
     uint32_t getDefaultBaudrate() { return 9600; };
 
-    // Initializes the modem instance. Sets the modem stream and the on-off power pins.
+    // Initializes the modem instance. Sets the modem and debug stream and the on-off power pins.
     void init(Stream& stream, Stream& debug, int8_t onoffPin);
 
     // Turns on and initializes the modem, then connects to the network and activates the data connection.
@@ -72,26 +72,12 @@ class Sodaq_nbIOT: public Sodaq_AT_Device
     int8_t getLastRSSI() const { return _lastRSSI; }
 
     int createSocket(uint16_t localPort = 0);
-    //bool connectSocket(uint8_t socket, const char* host, uint16_t port);
-    //bool socketSend(uint8_t socket, const uint8_t* buffer, size_t size);
-    //size_t socketReceive(uint8_t socket, uint8_t* buffer, size_t size);
-    //size_t socketBytesPending(uint8_t socket);
-    //bool closeSocket(uint8_t socket);
-
+    
     bool sendMessage(const uint8_t* buffer, size_t size);
     bool sendMessage(const char* str);
     bool sendMessage(String str);
     int getSentMessagesCount(SentMessageStatus filter);
-    
-    bool checkAndApplyNconfig();
-    bool setOperator(const char* forceOperator);
-    bool setOperator();
-    void reboot();
-    bool attachBee(uint32_t timeout = 30 * 1000);
-    bool waitForSignalQuality(uint32_t timeout = 60L * 1000);
-    bool forceConnection();
-    bool setNoOperator();
-    
+       
   protected:
     // override
     ResponseTypes readResponse(char* buffer, size_t size, size_t* outSize, uint32_t timeout = SODAQ_AT_DEVICE_DEFAULT_READ_MS)
@@ -153,11 +139,13 @@ class Sodaq_nbIOT: public Sodaq_AT_Device
 
     static bool startsWith(const char* pre, const char* str);
 
-    //bool waitForSignalQuality(uint32_t timeout = 60L * 1000);
-    //bool attachBee(uint32_t timeout = 30 * 1000);
+    bool checkAndApplyNconfig();
+    bool setOperator(const char* forceOperator);
+    bool setOperator();
+    void reboot();
+    bool attachBee(uint32_t timeout = 30 * 1000);
+    bool waitForSignalQuality(uint32_t timeout = 60L * 1000);
     bool setNconfigParam(const char* param, const char* value);
-    //bool checkAndApplyNconfig();
-    //void reboot();
 
     static ResponseTypes _csqParser(ResponseTypes& response, const char* buffer, size_t size, int* rssi, int* ber);
     static ResponseTypes _createSocketParser(ResponseTypes& response, const char* buffer, size_t size, uint8_t* socket, uint8_t* dummy);

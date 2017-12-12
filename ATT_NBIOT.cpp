@@ -1,24 +1,25 @@
-/*
-    Copyright (c) 2015-2016 Sodaq.  All rights reserved.
+/*    _   _ _ _____ _    _              _____     _ _     ___ ___  _  __
+ *   /_\ | | |_   _| |_ (_)_ _  __ _ __|_   _|_ _| | |__ / __|   \| |/ /
+ *  / _ \| | | | | | ' \| | ' \/ _` (_-< | |/ _` | | / / \__ \ |) | ' <
+ * /_/ \_\_|_| |_| |_||_|_|_||_\__, /__/ |_|\__,_|_|_\_\ |___/___/|_|\_\
+ *                             |___/
+ *
+ * Copyright 2018 AllThingsTalk
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-    This file is part of Sodaq_nbIOT.
-
-    Sodaq_nbIOT is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or(at your option) any later version.
-
-    Sodaq_nbIOT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with Sodaq_nbIOT.  If not, see
-    <http://www.gnu.org/licenses/>.
-*/
-
-#include "Sodaq_nbIOT.h"
+#include "ATT_NBIOT.h"
 #include <Sodaq_wdt.h>
 
 #define DEBUG  // We want debug info
@@ -63,12 +64,12 @@ typedef struct NameValuePair {
 
 const uint8_t nConfigCount = 3; //6
 static NameValuePair nConfig[nConfigCount] = {
-    { "AUTOCONNECT", "TRUE" },
-    { "CR_0354_0338_SCRAMBLING", "TRUE" },
-    { "CR_0859_SI_AVOID", "TRUE" },
-//    { "COMBINE_ATTACH" , "FALSE" },
-//    { "CELL_RESELECTION" , "FALSE" },
-//    { "ENABLE_BIP" , "FALSE" },
+  { "AUTOCONNECT", "TRUE" },
+  { "CR_0354_0338_SCRAMBLING", "TRUE" },
+  { "CR_0859_SI_AVOID", "TRUE" },
+  //{ "COMBINE_ATTACH" , "FALSE" },
+  //{ "CELL_RESELECTION" , "FALSE" },
+  //{ "ENABLE_BIP" , "FALSE" },
 };
 
 class Sodaq_nbIotOnOff : public Sodaq_OnOffBee
@@ -95,17 +96,17 @@ static inline bool is_timedout(uint32_t from, uint32_t nr_ms)
 /****
 * Constructor
 */
-Sodaq_nbIOT::Sodaq_nbIOT() :
-    _lastRSSI(0),
-    _CSQtime(0),
-    _minRSSI(-113) // dBm
+ATT_NBIOT::ATT_NBIOT() :
+  _lastRSSI(0),
+  _CSQtime(0),
+  _minRSSI(-113) // dBm
 {
 }
 
 /****
 * Returns true if the modem replies to "AT" commands without timing out
 */
-bool Sodaq_nbIOT::isAlive()
+bool ATT_NBIOT::isAlive()
 {
   _disableDiag = true;
   println(STR_AT);
@@ -117,7 +118,7 @@ bool Sodaq_nbIOT::isAlive()
 * Initializes the modem instance
 * Sets the modem stream and the on-off power pins
 */
-void Sodaq_nbIOT::init(Stream& stream, Stream& debug, int8_t onoffPin)
+void ATT_NBIOT::init(Stream& stream, Stream& debug, int8_t onoffPin)
 {
   debugPrintLn("[init] started.");
 
@@ -133,7 +134,7 @@ void Sodaq_nbIOT::init(Stream& stream, Stream& debug, int8_t onoffPin)
 /****
  *
  */
-bool Sodaq_nbIOT::setRadioActive(bool on)
+bool ATT_NBIOT::setRadioActive(bool on)
 {
   print("AT+CFUN=");
   println(on ? "1" : "0");
@@ -144,7 +145,7 @@ bool Sodaq_nbIOT::setRadioActive(bool on)
 /****
  * Set the network url
  */
-bool Sodaq_nbIOT::setApn(const char* apn)
+bool ATT_NBIOT::setApn(const char* apn)
 {
     print("AT+CGDCONT=" DEFAULT_CID ",\"IP\",\"");
     print(apn);
@@ -153,7 +154,7 @@ bool Sodaq_nbIOT::setApn(const char* apn)
     return (readResponse() == ResponseOK);
 }
 
-void Sodaq_nbIOT::purgeAllResponsesRead()
+void ATT_NBIOT::purgeAllResponsesRead()
 {
     uint32_t start = millis();
 
@@ -173,9 +174,10 @@ void Sodaq_nbIOT::purgeAllResponsesRead()
  *  8. [optional] Set/force the operator
  *  9. Check signal quality
  * 10. Connect the bee
+ * 11. Create DGRAM socket
  *  Success!
  */
-bool Sodaq_nbIOT::connect(const char* apn, const char* udp, const char* port, const char* forceOperator)
+bool ATT_NBIOT::connect(const char* apn, const char* udp, const char* port, const char* forceOperator)
 {
   _udp = udp;
   _port = port;
@@ -230,7 +232,7 @@ bool Sodaq_nbIOT::connect(const char* apn, const char* udp, const char* port, co
 /****
  * Reboot the bee
  */
-void Sodaq_nbIOT::reboot()
+void ATT_NBIOT::reboot()
 {
   println("AT+NRB");
 
@@ -240,19 +242,9 @@ void Sodaq_nbIOT::reboot()
 }
 
 /****
- * Force connection
+ * Retrieve and apply modem configuration
  */
-bool Sodaq_nbIOT::forceConnection()
-{
-  println("AT+CGATT=1");
-
-  return readResponse() == ResponseOK;
-}
-
-/****
- *
- */
-bool Sodaq_nbIOT::checkAndApplyNconfig()
+bool ATT_NBIOT::checkAndApplyNconfig()
 {
   bool applyParam[nConfigCount];
 
@@ -281,7 +273,7 @@ bool Sodaq_nbIOT::checkAndApplyNconfig()
 /****
  * Set a forced operator
  */
-bool Sodaq_nbIOT::setOperator(const char* forceOperator)
+bool ATT_NBIOT::setOperator(const char* forceOperator)
 {
   print("AT+COPS=1,2,\"");
   print(forceOperator);
@@ -290,10 +282,12 @@ bool Sodaq_nbIOT::setOperator(const char* forceOperator)
   return readResponse() == ResponseOK;
 }
 
-bool Sodaq_nbIOT::setOperator()
+bool ATT_NBIOT::setOperator()
 {
   println("AT+COPS=0");
-
+  
+  return readResponse() == ResponseOK;
+/*
   // Wait up to 2000ms for the modem to come up
   uint32_t start = millis();
   
@@ -304,17 +298,18 @@ bool Sodaq_nbIOT::setOperator()
       return true;
   }
   return false;
+  */
 }
 
 /****
  * Set socket
  */
-int Sodaq_nbIOT::createSocket(uint16_t localPort)
+int ATT_NBIOT::createSocket(uint16_t localPort)
 {
-  // only Datagram/UDP is supported
+  // Only Datagram/UDP is supported
   print("AT+NSOCR=\"DGRAM\",17,");
   print(localPort);
-  println(",1"); // enable incoming message URC (NSONMI)
+  println(",1"); // Enable incoming message URC (NSONMI)
 
   uint8_t socket;
 
@@ -327,7 +322,7 @@ int Sodaq_nbIOT::createSocket(uint16_t localPort)
 /****
  * Set a specific parameter
  */
-bool Sodaq_nbIOT::setNconfigParam(const char* param, const char* value)
+bool ATT_NBIOT::setNconfigParam(const char* param, const char* value)
 {
   print("AT+NCONFIG=\"");
   print(param);
@@ -341,7 +336,7 @@ bool Sodaq_nbIOT::setNconfigParam(const char* param, const char* value)
 /****
  * Connect the bee
  */
-bool Sodaq_nbIOT::attachBee(uint32_t timeout)
+bool ATT_NBIOT::attachBee(uint32_t timeout)
 {
   uint32_t start = millis();
   uint32_t delay_count = 500;
@@ -363,7 +358,7 @@ bool Sodaq_nbIOT::attachBee(uint32_t timeout)
 /****
  * Disconnects the modem from the network
  */
-bool Sodaq_nbIOT::disconnect()
+bool ATT_NBIOT::disconnect()
 {
   println("AT+CGATT=0");
   return (readResponse(NULL, 40000) == ResponseOK);
@@ -372,7 +367,7 @@ bool Sodaq_nbIOT::disconnect()
 /****
  * Returns true if the modem is connected to the network and has an activated data connection
  */
-bool Sodaq_nbIOT::isConnected()
+bool ATT_NBIOT::isConnected()
 {
   uint8_t value = 0;
 
@@ -387,9 +382,9 @@ bool Sodaq_nbIOT::isConnected()
  * Gets the Received Signal Strength Indication in dBm and Bit Error Rate.
  * Returns true if successful.
  */
-bool Sodaq_nbIOT::getRSSIAndBER(int8_t* rssi, uint8_t* ber)
+bool ATT_NBIOT::getRSSIAndBER(int8_t* rssi, uint8_t* ber)
 {
-    static char berValues[] = { 49, 43, 37, 25, 19, 13, 7, 0 }; // 3GPP TS 45.008 [20] subclause 8.2.4
+    static char berValues[] = { 49, 43, 37, 25, 19, 13, 7, 0 };  // 3GPP TS 45.008 [20] subclause 8.2.4
 
     println("AT+CSQ");
 
@@ -414,56 +409,58 @@ bool Sodaq_nbIOT::getRSSIAndBER(int8_t* rssi, uint8_t* ber)
  * 31: -51 dBm or greater
  * 99: not known or not detectable or currently not available
  */
-int8_t Sodaq_nbIOT::convertCSQ2RSSI(uint8_t csq) const
+int8_t ATT_NBIOT::convertCSQ2RSSI(uint8_t csq) const
 {
     return -113 + 2 * csq;
 }
 
-uint8_t Sodaq_nbIOT::convertRSSI2CSQ(int8_t rssi) const
+uint8_t ATT_NBIOT::convertRSSI2CSQ(int8_t rssi) const
 {
     return (rssi + 113) / 2;
 }
 
-bool Sodaq_nbIOT::startsWith(const char* pre, const char* str)
+bool ATT_NBIOT::startsWith(const char* pre, const char* str)
 {
     return (strncmp(pre, str, strlen(pre)) == 0);
 }
 
-bool Sodaq_nbIOT::waitForSignalQuality(uint32_t timeout)
+bool ATT_NBIOT::waitForSignalQuality(uint32_t timeout)
 {
-    uint32_t start = millis();
-    const int8_t minRSSI = getMinRSSI();
-    int8_t rssi;
-    uint8_t ber;
+  uint32_t start = millis();
+  const int8_t minRSSI = getMinRSSI();
+  int8_t rssi;
+  uint8_t ber;
 
-    uint32_t delay_count = 500;
+  uint32_t delay_count = 500;
 
-    while (!is_timedout(start, timeout)) {
-        if (getRSSIAndBER(&rssi, &ber)) {
-            if (rssi != 0 && rssi >= minRSSI) {
-                _lastRSSI = rssi;
-                _CSQtime = (int32_t)(millis() - start) / 1000;
-                return true;
-            }
-        }
-
-        sodaq_wdt_safe_delay(delay_count);
-
-        // Next time wait a little longer, but not longer than 5 seconds
-        if (delay_count < 5000) {
-            delay_count += 1000;
-        }
+  while (!is_timedout(start, timeout))
+  {
+    if (getRSSIAndBER(&rssi, &ber))
+    {
+      if (rssi != 0 && rssi >= minRSSI)
+      {
+        _lastRSSI = rssi;
+        _CSQtime = (int32_t)(millis() - start) / 1000;
+        return true;
+      }
     }
 
-    return false;
+    sodaq_wdt_safe_delay(delay_count);
+
+    // Next time wait a little longer, but not longer than 5 seconds
+    if (delay_count < 5000)
+       delay_count += 1000;
+  }
+
+  return false;
 }
 
-bool Sodaq_nbIOT::sendMessage(const char* str)
+bool ATT_NBIOT::sendMessage(const char* str)
 {
   return sendMessage((const uint8_t*)str, strlen(str));
 }
 
-bool Sodaq_nbIOT::sendMessage(String str)
+bool ATT_NBIOT::sendMessage(String str)
 {
   return sendMessage(str.c_str());
 }
@@ -472,7 +469,7 @@ bool Sodaq_nbIOT::sendMessage(String str)
  * AT+NSOST=0,"194.78.195.244",1022,11,"48656c6c6f20576f726c64"
  * AT+NSOST=0,"52.166.32.29",5684,11,"48656C6C6F2047656E74"
  */
-bool Sodaq_nbIOT::sendMessage(const uint8_t* buffer, size_t size)
+bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
 {
   if (size > 512)
     return false;
@@ -482,7 +479,7 @@ bool Sodaq_nbIOT::sendMessage(const uint8_t* buffer, size_t size)
   print("\",");
   print(_port);
   print(",");
-  print(size);
+  print(size);  // Number of bytes in message
   print(",\"");
   
   for (uint16_t i = 0; i < size; ++i)
@@ -498,7 +495,7 @@ bool Sodaq_nbIOT::sendMessage(const uint8_t* buffer, size_t size)
 /****
  *
  */
-int Sodaq_nbIOT::getSentMessagesCount(SentMessageStatus filter)
+int ATT_NBIOT::getSentMessagesCount(SentMessageStatus filter)
 {
   println("AT+NQMGS");
 
@@ -517,7 +514,7 @@ int Sodaq_nbIOT::getSentMessagesCount(SentMessageStatus filter)
 }
 
 // ==============================
-// Response parsing
+// AT Response parsing
 // ==============================
 
 /****
@@ -528,7 +525,7 @@ int Sodaq_nbIOT::getSentMessagesCount(SentMessageStatus filter)
  * _socketPendingBytes[] if +UUSORD: is seen
  * _socketClosedBit[] if +UUSOCL: is seen
  */
-ResponseTypes Sodaq_nbIOT::readResponse(char* buffer, size_t size,
+ResponseTypes ATT_NBIOT::readResponse(char* buffer, size_t size,
                                         CallbackMethodPtr parserMethod, void* callbackParameter, void* callbackParameter2,
                                         size_t* outSize, uint32_t timeout)
 {
@@ -553,7 +550,7 @@ ResponseTypes Sodaq_nbIOT::readResponse(char* buffer, size_t size,
       debugPrintLn(buffer);
 
       if (startsWith(STR_AT, buffer))
-        continue; // skip echoed back command
+        continue;  // Skip echoed back command
 
       _disableDiag = false;
 
@@ -598,7 +595,7 @@ ResponseTypes Sodaq_nbIOT::readResponse(char* buffer, size_t size,
       }
     }
 
-    delay(10);  // TODO Why do we need this delay?
+    delay(10);
   }
   while (!is_timedout(from, timeout));
 
@@ -609,7 +606,7 @@ ResponseTypes Sodaq_nbIOT::readResponse(char* buffer, size_t size,
   return ResponseTimeout;
 }
 
-ResponseTypes Sodaq_nbIOT::_createSocketParser(ResponseTypes& response, const char* buffer, size_t size, uint8_t* socket, uint8_t* dummy)
+ResponseTypes ATT_NBIOT::_createSocketParser(ResponseTypes& response, const char* buffer, size_t size, uint8_t* socket, uint8_t* dummy)
 {
   if (!socket)
     return ResponseError;
@@ -625,7 +622,7 @@ ResponseTypes Sodaq_nbIOT::_createSocketParser(ResponseTypes& response, const ch
   return ResponseError;
 }
 
-ResponseTypes Sodaq_nbIOT::_nconfigParser(ResponseTypes& response, const char* buffer, size_t size, bool* nconfigEqualsArray, uint8_t* dummy)
+ResponseTypes ATT_NBIOT::_nconfigParser(ResponseTypes& response, const char* buffer, size_t size, bool* nconfigEqualsArray, uint8_t* dummy)
 {
   if (!nconfigEqualsArray)
     return ResponseError;
@@ -651,7 +648,7 @@ ResponseTypes Sodaq_nbIOT::_nconfigParser(ResponseTypes& response, const char* b
   return ResponseError;
 }
 
-ResponseTypes Sodaq_nbIOT::_cgattParser(ResponseTypes& response, const char* buffer, size_t size, uint8_t* result, uint8_t* dummy)
+ResponseTypes ATT_NBIOT::_cgattParser(ResponseTypes& response, const char* buffer, size_t size, uint8_t* result, uint8_t* dummy)
 {
   if (!result)
     return ResponseError;
@@ -666,7 +663,7 @@ ResponseTypes Sodaq_nbIOT::_cgattParser(ResponseTypes& response, const char* buf
   return ResponseError;
 }
 
-ResponseTypes Sodaq_nbIOT::_csqParser(ResponseTypes& response, const char* buffer, size_t size, int* rssi, int* ber)
+ResponseTypes ATT_NBIOT::_csqParser(ResponseTypes& response, const char* buffer, size_t size, int* rssi, int* ber)
 {
   if (!rssi || !ber)
     return ResponseError;
@@ -677,7 +674,7 @@ ResponseTypes Sodaq_nbIOT::_csqParser(ResponseTypes& response, const char* buffe
   return ResponseError;
 }
 
-ResponseTypes Sodaq_nbIOT::_nqmgsParser(ResponseTypes& response, const char* buffer, size_t size, uint16_t* pendingCount, uint16_t* errorCount)
+ResponseTypes ATT_NBIOT::_nqmgsParser(ResponseTypes& response, const char* buffer, size_t size, uint16_t* pendingCount, uint16_t* errorCount)
 {
   if (!pendingCount || !errorCount)
     return ResponseError;

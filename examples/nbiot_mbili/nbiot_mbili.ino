@@ -1,6 +1,9 @@
+/****
+ * Test sketch to set up NB-IOT connection on the Sodaq Mbili with ublox bee
+ */
+
 #include <Arduino.h>
 #include "Sodaq_nbIOT.h"
-#include <Sodaq_wdt.h>
 
 // Mbili
 #define DEBUG_STREAM Serial
@@ -9,17 +12,17 @@
 
 #define baud 9600
 
-#define STARTUP_DELAY 3000
-
 const char* apn = "iot.orange.be";  // nb-iot network
 //const char* forceOperator = "20610";
+
 const char* udp = "52.166.32.29";  // AllThingsTalk endpoint
 const char* port = "5684";
 
-Sodaq_nbIOT nbiot;
+ATT_NBIOT nbiot;
 
-void sendMessage(const char* message);
-
+/****
+ *
+ */
 void setup()
 {
   sodaq_wdt_safe_delay(STARTUP_DELAY);
@@ -29,8 +32,10 @@ void setup()
   
   DEBUG_STREAM.println("Initializing and connecting... ");
 
+  // Initialize the streams and turn on power to the bee module
   nbiot.init(MODEM_STREAM, DEBUG_STREAM, MODEM_ON_OFF_PIN);
   
+  // Try connecting to the nb-iot network
   if(nbiot.connect(apn, udp, port))
     DEBUG_STREAM.println("Connected!");
   else
@@ -39,10 +44,13 @@ void setup()
     while(true) {}  // No connection. No need to continue the program
   }
 
-  const char* message = "Hello Ghent";
-  nbiot.sendMessage(message);
+  // Send one message
+  nbiot.sendMessage("Hello from Ghent");
 }
 
+/****
+ * Serial passthrough
+ */
 void loop()
 {
   while (DEBUG_STREAM.available())
