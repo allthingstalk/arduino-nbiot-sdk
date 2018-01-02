@@ -114,6 +114,12 @@ bool ATT_NBIOT::isAlive()
   return (readResponse(NULL, 450) == ResponseOK);
 }
 
+void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken)
+{
+  _deviceId = deviceid;
+  _deviceToken = devicetoken;
+}
+
 /****
 * Initializes the modem instance
 * Sets the modem stream and the on-off power pins
@@ -122,7 +128,7 @@ void ATT_NBIOT::init(Stream& stream, Stream& debug, int8_t onoffPin)
 {
   debugPrintLn("[init] started.");
 
-  initBuffer(); // safe to call multiple times
+  initBuffer(); // Safe to call multiple times
 
   setModemStream(stream);
   setDiag(debug);
@@ -177,10 +183,15 @@ void ATT_NBIOT::purgeAllResponsesRead()
  * 11. Create DGRAM socket
  *  Success!
  */
-bool ATT_NBIOT::connect(const char* apn, const char* udp, const char* port, const char* forceOperator)
+bool ATT_NBIOT::connect()
 {
-  _udp = udp;
-  _port = port;
+  // nb-iot network
+  const char* apn = "iot.orange.be";
+  //const char* forceOperator = "20610";
+
+  // AllThingsTalk endpoint
+  _udp = "52.166.32.29";
+  _port = "12345";
   
   if(!on())
     return false;
@@ -206,12 +217,14 @@ bool ATT_NBIOT::connect(const char* apn, const char* udp, const char* port, cons
   if(!setRadioActive(true))
     return false;
 
-  if(forceOperator && forceOperator[0] != '\0')
-  {
-    if(!setOperator(forceOperator))
-      return false;
-  }
-  else if(!setOperator())
+  //if(forceOperator && forceOperator[0] != '\0')
+  //{
+  //  if(!setOperator(forceOperator))
+  //    return false;
+  //}
+  //else if(!setOperator())
+  //  return false;
+  if(!setOperator())
     return false;
 
   if(!waitForSignalQuality())
@@ -287,18 +300,6 @@ bool ATT_NBIOT::setOperator()
   println("AT+COPS=0");
   
   return readResponse() == ResponseOK;
-/*
-  // Wait up to 2000ms for the modem to come up
-  uint32_t start = millis();
-  
-  //while ((readResponse() != ResponseOK) && !is_timedout(start, 2000)) { }
-  while(!is_timedout(start, 2000))
-  {
-    if(readResponse() == ResponseOK)
-      return true;
-  }
-  return false;
-  */
 }
 
 /****
@@ -411,17 +412,17 @@ bool ATT_NBIOT::getRSSIAndBER(int8_t* rssi, uint8_t* ber)
  */
 int8_t ATT_NBIOT::convertCSQ2RSSI(uint8_t csq) const
 {
-    return -113 + 2 * csq;
+  return -113 + 2 * csq;
 }
 
 uint8_t ATT_NBIOT::convertRSSI2CSQ(int8_t rssi) const
 {
-    return (rssi + 113) / 2;
+  return (rssi + 113) / 2;
 }
 
 bool ATT_NBIOT::startsWith(const char* pre, const char* str)
 {
-    return (strncmp(pre, str, strlen(pre)) == 0);
+  return (strncmp(pre, str, strlen(pre)) == 0);
 }
 
 bool ATT_NBIOT::waitForSignalQuality(uint32_t timeout)
@@ -449,7 +450,7 @@ bool ATT_NBIOT::waitForSignalQuality(uint32_t timeout)
 
     // Next time wait a little longer, but not longer than 5 seconds
     if (delay_count < 5000)
-       delay_count += 1000;
+      delay_count += 1000;
   }
 
   return false;
@@ -462,7 +463,23 @@ bool ATT_NBIOT::sendMessage(const char* str)
 
 bool ATT_NBIOT::sendMessage(String str)
 {
-  return sendMessage(str.c_str());
+  String message = String(_deviceId) + "\n" + String(_deviceToken) + "\n" + str;
+  return sendMessage(message.c_str());
+}
+
+// {\"b\":{\"value\":\"" + counter + "\"}}
+bool ATT_NBIOT::sendMessage(int value, String asset)
+{
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":";
+  message += String(value);
+  message += "}}";
+  return sendMessage(message.c_str());
 }
 
 /****
@@ -481,6 +498,11 @@ bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
   print(",");
   print(size);  // Number of bytes in message
   print(",\"");
+  
+  //print(_deviceId);
+  //print("\n");
+  //print(_deviceToken);
+  //print("\n");
   
   for (uint16_t i = 0; i < size; ++i)
   {

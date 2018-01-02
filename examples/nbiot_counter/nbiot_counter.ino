@@ -29,13 +29,9 @@
 
 #define baud 9600
 
-// nb-iot network
-const char* apn = "iot.orange.be";
-//const char* forceOperator = "20610";
-
-// AllThingsTalk endpoint
-const char* udp = "52.166.32.29";
-const char* port = "5684";
+// AllThingsTalk Device
+const char* deviceid = "Ddjdc1aYskfXGva9z6gelQWO";
+const char* devicetoken = "spicy:4O3SMDqz3ygu80Nw7ybfJYdrR1FwCzN5fMFwuTD1";
 
 ATT_NBIOT nbiot;
 
@@ -48,9 +44,10 @@ void setup()
   
   DEBUG_STREAM.println("Initializing and connecting... ");
 
+  nbiot.setAttDevice(deviceid, devicetoken);
   nbiot.init(MODEM_STREAM, DEBUG_STREAM, MODEM_ON_OFF_PIN);
   
-  if(nbiot.connect(apn, udp, port))
+  if(nbiot.connect())
     DEBUG_STREAM.println("Connected!");
   else
   {
@@ -65,7 +62,7 @@ void loop()
 {
   if(sendNextAt < millis())
   {
-    nbiot.sendMessage(String(counter));
+    nbiot.sendMessage(counter, "b");  // Send value to this asset
     counter++;
     sendNextAt = millis() + 10000;
   }

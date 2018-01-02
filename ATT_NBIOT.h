@@ -47,11 +47,15 @@ class ATT_NBIOT: public Sodaq_AT_Device
     // To be used when initializing the modem stream for the first time.
     uint32_t getDefaultBaudrate() { return 9600; };
 
+    // Create an instance of an AllThingsTalk device
+    void setAttDevice(const char* deviceid, const char* devicetoken);
+    
     // Initializes the modem instance. Sets the modem and debug stream and the on-off power pins.
     void init(Stream& stream, Stream& debug, int8_t onoffPin);
 
     // Turns on and initializes the modem, then connects to the network and activates the data connection.
-    bool connect(const char* apn, const char* udp, const char* port, const char* forceOperator = 0);
+    //bool connect(const char* apn, const char* udp, const char* port, const char* forceOperator = 0);
+    bool connect();
 
     // Disconnects the modem from the network.
     bool disconnect();
@@ -76,6 +80,8 @@ class ATT_NBIOT: public Sodaq_AT_Device
     bool sendMessage(const uint8_t* buffer, size_t size);
     bool sendMessage(const char* str);
     bool sendMessage(String str);
+    bool sendMessage(int value, String asset);
+    
     int getSentMessagesCount(SentMessageStatus filter);
        
   protected:
@@ -136,6 +142,8 @@ class ATT_NBIOT: public Sodaq_AT_Device
     
     const char* _udp;
     const char* _port;
+    const char* _deviceId;
+    const char* _deviceToken;
 
     static bool startsWith(const char* pre, const char* str);
 
