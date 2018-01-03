@@ -80,7 +80,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     bool sendMessage(const uint8_t* buffer, size_t size);
     bool sendMessage(const char* str);
     bool sendMessage(String str);
-    bool sendMessage(int value, String asset);
+    bool sendMessage(int value, String asset);  // 1 value to 1 asset
     
     int getSentMessagesCount(SentMessageStatus filter);
        

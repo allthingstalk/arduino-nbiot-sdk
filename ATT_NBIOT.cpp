@@ -128,7 +128,7 @@ void ATT_NBIOT::init(Stream& stream, Stream& debug, int8_t onoffPin)
 {
   debugPrintLn("[init] started.");
 
-  initBuffer(); // Safe to call multiple times
+  initBuffer();  // Safe to call multiple times
 
   setModemStream(stream);
   setDiag(debug);
@@ -187,7 +187,7 @@ bool ATT_NBIOT::connect()
 {
   // nb-iot network
   const char* apn = "iot.orange.be";
-  //const char* forceOperator = "20610";
+  const char* forceOperator;  // "20610" for Orange Belgium
 
   // AllThingsTalk endpoint
   _udp = "52.166.32.29";
@@ -217,14 +217,12 @@ bool ATT_NBIOT::connect()
   if(!setRadioActive(true))
     return false;
 
-  //if(forceOperator && forceOperator[0] != '\0')
-  //{
-  //  if(!setOperator(forceOperator))
-  //    return false;
-  //}
-  //else if(!setOperator())
-  //  return false;
-  if(!setOperator())
+  if(forceOperator && forceOperator[0] != '\0')
+  {
+    if(!setOperator(forceOperator))
+      return false;
+  }
+  else if(!setOperator())
     return false;
 
   if(!waitForSignalQuality())
@@ -310,7 +308,7 @@ int ATT_NBIOT::createSocket(uint16_t localPort)
   // Only Datagram/UDP is supported
   print("AT+NSOCR=\"DGRAM\",17,");
   print(localPort);
-  println(",1"); // Enable incoming message URC (NSONMI)
+  println(",1");  // Enable incoming message URC (NSONMI)
 
   uint8_t socket;
 
@@ -463,7 +461,12 @@ bool ATT_NBIOT::sendMessage(const char* str)
 
 bool ATT_NBIOT::sendMessage(String str)
 {
-  String message = String(_deviceId) + "\n" + String(_deviceToken) + "\n" + str;
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n";
+  message += str;
   return sendMessage(message.c_str());
 }
 
@@ -498,11 +501,6 @@ bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
   print(",");
   print(size);  // Number of bytes in message
   print(",\"");
-  
-  //print(_deviceId);
-  //print("\n");
-  //print(_deviceToken);
-  //print("\n");
   
   for (uint16_t i = 0; i < size; ++i)
   {

@@ -62,10 +62,7 @@ void loop()
 {
   if(sendNextAt < millis())
   {
-    //nbiot.sendMessage(counter, "b");  // Send counter value to asset b
-    //nbiot.sendMessage(String("\xA1\x61\x61\xF4"));  // Send CBOR value {"a": {"value": false}}
-    nbiot.sendMessage(String("\x34"));  // Send ABCL value 52 to device
-    
+    nbiot.sendMessage(counter, "b");  // Send value to this asset
     counter++;
     sendNextAt = millis() + 10000;
   }
