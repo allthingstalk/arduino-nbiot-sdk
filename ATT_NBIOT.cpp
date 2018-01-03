@@ -513,6 +513,49 @@ bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
 }
 
 /****
+ * Create payload string
+ */
+bool ATT_NBIOT::sendPayload(void* packet, unsigned char size, bool ack)
+{
+  // Print credentials string
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n";
+  
+  const char* buffer = message.c_str();
+  size_t lng = strlen(message.c_str());  // Fixed 72 chars "deviceid\ndevicetoken\n"
+
+  // Print AT command
+  print("AT+NSOST=0,\"");
+  print(_udp);
+  print("\",");
+  print(_port);
+  print(",");
+  print((lng+size));  // Length of ATT credentials + actual sensor data part of the payload
+  print(",\"");  
+ 
+  // Print ATT device credentials part of payload
+  for (uint16_t i = 0; i < lng; ++i)
+  {
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buffer[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buffer[i]))));
+  }
+  
+  // Print actual payload
+  char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	for (unsigned char i = 0; i < size; i++)
+  {
+		print(hexTable[((unsigned char*)packet)[i] / 16]);
+ 		print(hexTable[((unsigned char*)packet)[i] % 16]);
+	}
+  println("\"");
+  
+  return (readResponse() == ResponseOK);
+}
+
+/****
  *
  */
 int ATT_NBIOT::getSentMessagesCount(SentMessageStatus filter)

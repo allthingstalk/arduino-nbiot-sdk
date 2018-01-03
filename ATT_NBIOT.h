@@ -81,6 +81,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     bool sendMessage(const char* str);
     bool sendMessage(String str);
     bool sendMessage(int value, String asset);  // 1 value to 1 asset
+    bool sendPayload(void* packet, unsigned char size, bool ack);
     
     int getSentMessagesCount(SentMessageStatus filter);
        
@@ -154,7 +155,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     bool attachBee(uint32_t timeout = 30 * 1000);
     bool waitForSignalQuality(uint32_t timeout = 60L * 1000);
     bool setNconfigParam(const char* param, const char* value);
-
+    
     static ResponseTypes _csqParser(ResponseTypes& response, const char* buffer, size_t size, int* rssi, int* ber);
     static ResponseTypes _createSocketParser(ResponseTypes& response, const char* buffer, size_t size, uint8_t* socket, uint8_t* dummy);
     static ResponseTypes _nqmgsParser(ResponseTypes& response, const char* buffer, size_t size, uint16_t* pendingCount, uint16_t* errorCount);

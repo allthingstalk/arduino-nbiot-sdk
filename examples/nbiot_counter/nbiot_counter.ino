@@ -20,6 +20,7 @@
  */
 
 #include <Arduino.h>
+#include <PayloadBuilder.h>
 #include "ATT_NBIOT.h"
 
 // Mbili support
@@ -34,6 +35,7 @@ const char* deviceid = "Ddjdc1aYskfXGva9z6gelQWO";
 const char* devicetoken = "spicy:4O3SMDqz3ygu80Nw7ybfJYdrR1FwCzN5fMFwuTD1";
 
 ATT_NBIOT nbiot;
+PayloadBuilder payload(nbiot);
 
 void setup()
 {
@@ -62,9 +64,15 @@ void loop()
 {
   if(sendNextAt < millis())
   {
+    // Send binary payload of multiple assets using ABCL
+    payload.reset();
+    payload.addInteger(counter);
+    payload.addBoolean(counter % 3 == 0 ? true : false);  // true is divisible by 3, else false
+    payload.send(true);  // Check with ack
+    
     //nbiot.sendMessage(counter, "b");  // Send counter value to asset b
     //nbiot.sendMessage(String("\xA1\x61\x61\xF4"));  // Send CBOR value {"a": {"value": false}}
-    nbiot.sendMessage(String("\x34"));  // Send ABCL value 52 to device
+    //nbiot.sendMessage(String("\x34"));  // Send ABCL value 34 = 3*16+4 = 52 to device
     
     counter++;
     sendNextAt = millis() + 10000;
