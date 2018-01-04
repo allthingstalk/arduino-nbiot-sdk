@@ -1,0 +1,11 @@
+{
+  "comment" : "Environmental sensing example",
+  "sense": [
+    {"comment": "LOUDNESS", "asset": "loudness", "value": {"byte" : 0, "byteorder": "big", "bytelength": 4, "type": "number"}},
+    {"comment": "LIGHT", "asset": "light", "value": {"byte" : 4, "byteorder": "big", "bytelength": 4, "type": "number"}},
+    {"comment": "TEMPERATURE", "asset": "temperature", "value": {"byte" : 8, "byteorder": "big", "bytelength": 4, "type": "number"}},
+    {"comment": "HUMIDITY", "asset": "humidity", "value": {"byte" : 12, "byteorder": "big", "bytelength": 4, "type": "number"}},
+    {"comment": "PRESSURE", "asset": "pressure", "value": {"byte" : 16, "byteorder": "big", "bytelength": 4, "type": "number"}},
+    {"comment": "AIR_QUALITY", "asset": "air_quality", "value": {"byte" : 20, "byteorder": "little", "bytelength": 2, "type": "integer"}}
+  ]
+}

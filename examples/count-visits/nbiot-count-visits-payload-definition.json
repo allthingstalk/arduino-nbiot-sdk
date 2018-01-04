@@ -1,0 +1,14 @@
+{
+  "sense": [
+    {
+      "comment": "INTEGER",
+      "asset": "15",
+      "value": {
+        "byte": 0,
+        "bytelength": 2,
+        "byteorder": "little",
+        "type": "integer"
+      }
+    }
+  ]
+}

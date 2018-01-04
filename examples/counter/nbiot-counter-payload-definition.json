@@ -1,0 +1,7 @@
+{
+  "sense": [
+    { "asset": "counter", "value": {"byte": 0, "bytelength": 2, "byteorder": "little", "type": "integer"}},
+    { "asset": "boolean", "value": {"byte": 2, "type": "boolean"}},
+    { "asset": "number", "value": {"byte": 3, "bytelength": 4, "byteorder": "big", "type": "boolean"}}
+  ]
+}
