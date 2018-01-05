@@ -1,7 +1,7 @@
 {
   "comment": "Guard your stuff example",
   "sense": [
-    {"asset": "movement", "value": { "byte": 0, "type": "boolean"}},
+    {"asset": "motion", "value": { "byte": 0, "type": "boolean"}},
     {"asset": "gps", "value": {
       "latitude": {"byte": 1, "byteorder": "big", "bytelength": 4, "type": "number"},
       "longitude": {"byte": 5, "byteorder": "big", "bytelength": 4, "type": "number"},

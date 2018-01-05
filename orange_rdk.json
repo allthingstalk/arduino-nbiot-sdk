@@ -1,0 +1,20 @@
+{
+  "_id" : "orange_rdk",
+  "Template" : {
+    "title" : "Orange NB-IoT kit",
+    "description" : "Orange NB-IoT Rapid Development Kit",
+    "activityEnabled" : true,
+    "type" : "orange_rdk",
+    "assets" : [
+      {"name" : "counter", "title" : "Counter", "is" : "sensor", "profile" : { "type" : "integer"}},
+      {"name" : "temperature", "title" : "Temperature", "is" : "sensor", "profile" : { "type" : "number", "unit" : "°C"}},
+      {"name" : "pressure", "title" : "Pressure", "is" : "sensor", "profile" : { "type" : "number", "unit" : "hPa"}},
+      {"name" : "humidity", "title" : "Humidty", "is" : "sensor", "profile" : { "type" : "number", "unit" : "%"}},
+      {"name" : "loudness", "title" : "Loudness", "is" : "sensor", "profile" : { "type" : "number"}},
+      {"name" : "light", "title" : "Light", "is" : "sensor", "profile" : { "type" : "number", "unit" : "lux"}},
+      {"name" : "air_quality", "title" : "Air quality", "is" : "sensor", "profile" : { "type" : "integer"}},
+      {"name" : "motion", "title" : "Motion", "is" : "sensor", "profile" : { "type" : "boolean"}},
+      {"name" : "gps", "title" : "Gps", "is" : "sensor", "profile" : { "type" : "object", "properties":{"latitude": {"type": "number"}, "longitude": {"type": "number"}, "altitude": {"type": "number"}}}}
+    ]
+  }
+}

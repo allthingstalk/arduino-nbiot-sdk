@@ -511,13 +511,16 @@ bool ATT_NBIOT::sendMessage(bool value, String asset)
   message += "\n{\"";
   message += asset;
   message += "\":{\"value\":";
-  message += String(value);
+  if(value)
+    message += "true";
+  else
+    message += "false";
   message += "}}";
   return sendMessage(message.c_str());
 }
 
 // Send string value to a single asset
-bool ATT_NBIOT::sendMessage(String value, String asset)
+bool ATT_NBIOT::sendMessage(const char* value, String asset)
 {
   String message;
   message += String(_deviceId);
@@ -526,8 +529,9 @@ bool ATT_NBIOT::sendMessage(String value, String asset)
   message += "\n{\"";
   message += asset;
   message += "\":{\"value\":\"";
-  message += String(value);
+  message += value;
   message += "\"}}";
+  println(message);
   return sendMessage(message.c_str());
 }
 

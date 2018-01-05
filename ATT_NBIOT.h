@@ -86,7 +86,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     bool sendMessage(int value, String asset);
     bool sendMessage(bool value, String asset);
     bool sendMessage(float value, String asset);
-    bool sendMessage(String value, String asset);
+    bool sendMessage(const char* value, String asset);
     
     // send binary payload
     bool sendPayload(void* packet, unsigned char size, bool ack);

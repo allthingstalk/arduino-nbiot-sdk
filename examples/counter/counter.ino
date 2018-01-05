@@ -64,17 +64,9 @@ void loop()
 {
   if(sendNextAt < millis())
   {
-    // Send binary payload of multiple assets using ABCL
-    payload.reset();
-    payload.addInteger(counter);
-    payload.addBoolean(counter % 3 == 0 ? true : false);  // true is divisible by 3, else false
-    payload.addNumber(3.1415);
-    payload.send(true);  // Check with ack
-    
-    //nbiot.sendMessage(counter, "b");  // Send counter value to asset b
-    //nbiot.sendMessage(String("\xA1\x61\x61\xF4"));  // Send CBOR value {"a": {"value": false}}
-    
+    nbiot.sendMessage(counter, "counter");  // Send counter value
+   
     counter++;
-    sendNextAt = millis() + 10000;
+    sendNextAt = millis() + 100000;
   }
 }
