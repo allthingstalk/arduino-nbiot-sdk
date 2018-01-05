@@ -18,16 +18,23 @@ Download the source code and copy the content of the zip file to your arduino li
 Send a single datapoint to a single asset using the `send(value, asset)` function. Value can be any primitive type `integer`, `float`, `boolean` or `String`. For example
 
 ```
-nbiot.send(25, "counter");
-nbiot.send(false, "motion");
+ATT_NBIOT nbiot;
+```
+```
+  nbiot.send(25, "counter");
+  nbiot.send(false, "motion");
 ```
 
 ### Binary payload
 
-Using the [AllThingsTalk ABCL language](http://docs.allthingstalk.com/developers/custom-payload-conversion/), you can send a binary string containing datapoints of multiple assets in a single message. The example below show how you can easily construct and send your own custom payload.
+Using the [AllThingsTalk ABCL language](http://docs.allthingstalk.com/developers/custom-payload-conversion/), you can send a binary string containing datapoints of multiple assets in a single message. The example below shows how you can easily construct and send your own custom payload.
 
 > Make sure you set the correct decoding file at AllThingsTalk. Please check our documentation and the included experiments for examples.
 
+```
+ATT_NBIOT nbiot;
+PayloadBuilder payload(nbiot);  // Construct a payload object
+```
 ```
   payload.reset();
 
@@ -41,6 +48,8 @@ Using the [AllThingsTalk ABCL language](http://docs.allthingstalk.com/developers
 ## Examples
 
 ### Basic example
+
+Basic example showing all fundamental parts to set up a working example. Send data from the device, over NB-IoT to AllThingsTalk.
 
 * `counter.ino`
 
