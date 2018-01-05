@@ -459,6 +459,7 @@ bool ATT_NBIOT::sendMessage(const char* str)
   return sendMessage((const uint8_t*)str, strlen(str));
 }
 
+// Send cbor binary string
 bool ATT_NBIOT::sendMessage(String str)
 {
   String message;
@@ -470,7 +471,7 @@ bool ATT_NBIOT::sendMessage(String str)
   return sendMessage(message.c_str());
 }
 
-// {\"b\":{\"value\":\"" + counter + "\"}}
+// Send integer value to a single asset
 bool ATT_NBIOT::sendMessage(int value, String asset)
 {
   String message;
@@ -482,6 +483,51 @@ bool ATT_NBIOT::sendMessage(int value, String asset)
   message += "\":{\"value\":";
   message += String(value);
   message += "}}";
+  return sendMessage(message.c_str());
+}
+
+// Send float value to a single asset
+bool ATT_NBIOT::sendMessage(float value, String asset)
+{
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":";
+  message += String(value);
+  message += "}}";
+  return sendMessage(message.c_str());
+}
+
+// Send boolean value to a single asset
+bool ATT_NBIOT::sendMessage(bool value, String asset)
+{
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":";
+  message += String(value);
+  message += "}}";
+  return sendMessage(message.c_str());
+}
+
+// Send string value to a single asset
+bool ATT_NBIOT::sendMessage(String value, String asset)
+{
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":\"";
+  message += String(value);
+  message += "\"}}";
   return sendMessage(message.c_str());
 }
 

@@ -1,8 +1,8 @@
 {
   "comment": "Guard your stuff example",
   "sense": [
-    {"comment": "MOVEMENT", "asset": "movement", "value": { "byte": 0 }},
-    {"comment": "GPS", "asset": "gps", "value": {
+    {"asset": "movement", "value": { "byte": 0, "type": "boolean"}},
+    {"asset": "gps", "value": {
       "latitude": {"byte": 1, "byteorder": "big", "bytelength": 4, "type": "number"},
       "longitude": {"byte": 5, "byteorder": "big", "bytelength": 4, "type": "number"},
       "altitude": {"byte": 9, "byteorder": "big", "bytelength": 4, "type": "number"}

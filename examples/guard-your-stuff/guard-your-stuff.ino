@@ -90,7 +90,7 @@ void setup()
   DEBUG_STREAM.println("-- Guard your stuff LoRa experiment --");
   DEBUG_STREAM.println();
     
-  DEBUG_STREAM.print("Initializing GPS");
+  DEBUG_STREAM.print("Initializing GPS. Get first fix");
   while(readCoordinates() == false)
   {
     delay(1000);

@@ -77,10 +77,18 @@ class ATT_NBIOT: public Sodaq_AT_Device
 
     int createSocket(uint16_t localPort = 0);
     
+    // generic send functions
     bool sendMessage(const uint8_t* buffer, size_t size);
     bool sendMessage(const char* str);
     bool sendMessage(String str);
-    bool sendMessage(int value, String asset);  // 1 value to 1 asset
+    
+    // send 1 value to 1 asset
+    bool sendMessage(int value, String asset);
+    bool sendMessage(bool value, String asset);
+    bool sendMessage(float value, String asset);
+    bool sendMessage(String value, String asset);
+    
+    // send binary payload
     bool sendPayload(void* packet, unsigned char size, bool ack);
     
     int getSentMessagesCount(SentMessageStatus filter);
