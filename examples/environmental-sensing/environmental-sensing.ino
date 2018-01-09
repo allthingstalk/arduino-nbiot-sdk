@@ -19,7 +19,6 @@
  * limitations under the License.
  */
 
-#include <Arduino.h>
 #include <PayloadBuilder.h>
 #include "ATT_NBIOT.h"
 

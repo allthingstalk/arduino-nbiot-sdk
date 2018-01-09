@@ -531,7 +531,6 @@ bool ATT_NBIOT::sendMessage(const char* value, String asset)
   message += "\":{\"value\":\"";
   message += value;
   message += "\"}}";
-  println(message);
   return sendMessage(message.c_str());
 }
 
