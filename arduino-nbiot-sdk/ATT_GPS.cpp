@@ -141,7 +141,12 @@ void ATT_GPS::clearBufferArray()
 /****
  * Function to calculate the distance between two points
  */
-float ATT_GPS::calc_dist(float flat1, float flon1, float flat2, float flon2)
+float ATT_GPS::calcDistance(float flat1, float flon1)
+{
+  return calcDistance(latitude, longitude, flat1, flon1);
+}
+ 
+float ATT_GPS::calcDistance(float flat1, float flon1, float flat2, float flon2)
 {
   float dist_calc = 0;
   float dist_calc2 = 0;

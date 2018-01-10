@@ -29,7 +29,8 @@ class ATT_GPS {
     
     bool readCoordinates();
     float convertDegrees(float input);
-    float calc_dist(float flat1, float flon1, float flat2, float flon2);
+    float calcDistance(float flat1, float flon1, float flat2, float flon2);
+    float calcDistance(float flat1, float flon1);  // distance to current coordinates
     void setStream(SoftwareSerial& SoftSerial);
     
     // Variables for the coordinates (GPS)
