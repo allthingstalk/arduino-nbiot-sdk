@@ -35,6 +35,7 @@ ATT_NBIOT nbiot;
 
 ### Cbor
 
+```
 ATT_NBIOT nbiot;
 CborBuilder payload(nbiot);  // Construct a payload object
 ```
