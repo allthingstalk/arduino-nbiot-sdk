@@ -89,9 +89,14 @@ class ATT_NBIOT: public Sodaq_AT_Device
     bool sendMessage(const char* value, String asset);
     
     // send binary payload
-    bool sendPayload(void* packet, unsigned char size, bool ack);
+    bool sendPayload(void* packet, unsigned char size);
+    
+    // send cbor payload
+    bool sendCbor(unsigned char* data, unsigned int size);
     
     int getSentMessagesCount(SentMessageStatus filter);
+    
+    void printCbor(unsigned char* data, unsigned int size);
        
   protected:
     // override

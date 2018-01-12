@@ -564,7 +564,7 @@ bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
 /****
  * Create payload string
  */
-bool ATT_NBIOT::sendPayload(void* packet, unsigned char size, bool ack)
+bool ATT_NBIOT::sendPayload(void* packet, unsigned char size)
 {
   // Print credentials string
   String message;
@@ -582,8 +582,8 @@ bool ATT_NBIOT::sendPayload(void* packet, unsigned char size, bool ack)
   print("\",");
   print(_port);
   print(",");
-  print((lng+size));  // Length of ATT credentials + actual sensor data part of the payload
-  print(",\"");  
+  print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
+  print(",\"");
  
   // Print ATT device credentials part of payload
   for (uint16_t i = 0; i < lng; ++i)
@@ -602,6 +602,71 @@ bool ATT_NBIOT::sendPayload(void* packet, unsigned char size, bool ack)
   println("\"");
   
   return (readResponse() == ResponseOK);
+}
+
+/****
+ *
+ */
+bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
+{
+  print("SIZE: ");
+  println(size);
+  // Print credentials string
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n";
+  
+  const char* buffer = message.c_str();
+  size_t lng = strlen(message.c_str());  // Fixed 72 chars "deviceid\ndevicetoken\n"
+
+  // Print AT command
+  print("AT+NSOST=0,\"");
+  print(_udp);
+  print("\",");
+  print(_port);
+  print(",");
+  print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
+  print(",\"");
+ 
+  // Print ATT device credentials part of payload
+  for (uint16_t i = 0; i < lng; ++i)
+  {
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buffer[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buffer[i]))));
+  }
+  
+  char buff[size];
+  for (int i = 0; i < size; ++i) {
+    sprintf(buff, "%x", data[i]);
+    print(buff);
+  }
+  println("\"");
+  
+  return (readResponse() == ResponseOK);
+}
+
+void ATT_NBIOT::printCbor(unsigned char* data, unsigned int size)
+{
+  char buff[size];
+  for (int i = 0; i < size; ++i) {
+    //sprintf(buff, "%x", data[i]);
+    sprintf(buff, "%02x", data[i]);
+    print(buff);
+  }
+  println();
+  
+  /*
+  // Print actual payload
+  char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	for (unsigned char i = 0; i < size; i++)
+  {
+		print(hexTable[data[i] / 16]);
+ 		print(hexTable[data[i] % 16]);
+	}
+  println();
+  */
 }
 
 /****

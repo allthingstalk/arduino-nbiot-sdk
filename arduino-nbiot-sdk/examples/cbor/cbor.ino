@@ -19,8 +19,7 @@
  * limitations under the License.
  */
 
-#include <PayloadBuilder.h>
-#include <ArduinoCbor.h>
+#include "CborBuilder.h"
 #include "ATT_NBIOT.h"
 
 // Mbili support
@@ -31,11 +30,16 @@
 #define baud 9600
 
 // AllThingsTalk Device
-const char* deviceid = "Ddjdc1aYskfXGva9z6gelQWO";
-const char* devicetoken = "spicy:4O3SMDqz3ygu80Nw7ybfJYdrR1FwCzN5fMFwuTD1";
+//const char* deviceid = "Ddjdc1aYskfXGva9z6gelQWO";  // spicy
+//const char* devicetoken = "spicy:4O3SMDqz3ygu80Nw7ybfJYdrR1FwCzN5fMFwuTD1";
+const char* deviceid = "Iz3eoyfF0ksboxBgeDWQk9vz";  // maker
+const char* devicetoken = "maker:4LDG64opf84sW1VeVrytwWYzF78tb5nzUinN6Mf1";
+
 
 ATT_NBIOT nbiot;
-PayloadBuilder payload(nbiot);
+
+//Create object and Writer
+CborBuilder payload(nbiot);
 
 void setup()
 {
@@ -56,25 +60,19 @@ void setup()
     DEBUG_STREAM.println("Connection failed!");
     while(true) {}  // No connection. No need to continue the program
   }
-  
-  CborBuffer buffer(200);
-  CborObject object = CborObject(buffer);
-  
-  object.set("string", "helloworld");
-  object.set("integer", -1234);
 }
 
-int counter = 1;  // Initialize counter
+int counter = 101;  // Initialize counter
 unsigned long sendNextAt = 0;  // Keep track of time
 void loop() 
 {
-  /*
   if(sendNextAt < millis())
   {
-    nbiot.sendMessage(counter, "counter");  // Send counter value
+    payload.reset();
+    payload.addInteger("counter", counter);
+    payload.send();
    
     counter++;
-    sendNextAt = millis() + 100000;
+    sendNextAt = millis() + 30000;
   }
-  */
 }

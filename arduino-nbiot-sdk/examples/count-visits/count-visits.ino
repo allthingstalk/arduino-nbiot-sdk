@@ -72,7 +72,7 @@ void setup()
   }
 
   DEBUG_STREAM.println();
-  DEBUG_STREAM.println("-- Count visits LoRa experiment --");
+  DEBUG_STREAM.println("-- Count visits NB-IoT experiment --");
   DEBUG_STREAM.print("Sending data every ");
   DEBUG_STREAM.print(SEND_MAX_EVERY);
   DEBUG_STREAM.println(" milliseconds, if changed");

@@ -13,6 +13,14 @@ Download the source code and copy the content of the zip file to your arduino li
 
 ## Sending data
 
+There are three ways to send your data to AllThingsTalk
+
+* `Standard json`
+* `Cbor payload`
+* `Binary payload`
+
+Standard json will send a single datapoint to a single asset. Both _Cbor_ and _Binary_ allow you to construct your own payload. The former is slightly larger in size, the latter requires a small decoding file [(example)](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/arduino-nbiot-sdk/examples/environmental-sensing/nbiot-environmental-sensing-payload-definition.json) on the receiving end.
+
 ### Single asset
 
 Send a single datapoint to a single asset using the `send(value, asset)` function. Value can be any primitive type `integer`, `float`, `boolean` or `String`. For example
@@ -23,6 +31,19 @@ ATT_NBIOT nbiot;
 ```
   nbiot.send(25, "counter");
   nbiot.send(false, "motion");
+```
+
+### Cbor
+
+ATT_NBIOT nbiot;
+CborBuilder payload(nbiot);  // Construct a payload object
+```
+```
+  payload.reset();
+  
+  payload.addInteger("counter", 25);
+  
+  payload.send();
 ```
 
 ### Binary payload
@@ -42,7 +63,7 @@ PayloadBuilder payload(nbiot);  // Construct a payload object
   payload.addNumber(false);
   payload.addNumber(3.1415926);
 
-  payload.send(false);
+  payload.send();
 ```
 
 ## Examples

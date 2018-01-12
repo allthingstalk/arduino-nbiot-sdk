@@ -65,15 +65,15 @@ uint8_t PayloadBuilder::copy(uint8_t* dst)
   return cursor;
 }
 
-bool PayloadBuilder::send(void* packet, unsigned char size, bool ack)
+bool PayloadBuilder::send(void* packet, unsigned char size)
 {
-  return _nbiot->sendPayload(packet, size, ack);
+  return _nbiot->sendPayload(packet, size);
 }
 
-bool PayloadBuilder::send(bool ack)
+bool PayloadBuilder::send()
 {
   memcpy(sendBuffer, buffer, cursor);
-  return _nbiot->sendPayload(&sendBuffer, cursor, ack);
+  return _nbiot->sendPayload(&sendBuffer, cursor);
 }
 
 uint8_t PayloadBuilder::addBoolean(uint8_t value)

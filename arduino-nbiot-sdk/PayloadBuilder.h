@@ -52,12 +52,12 @@ class PayloadBuilder {
     /**
      * Send the payload.
      */
-    bool send(void* packet, unsigned char size, bool ack);
+    bool send(void* packet, unsigned char size);
 
     /**
      * Copy and send the payload.
      */
-    bool send(bool ack);
+    bool send();
     
     /**
      * Return the current size of the payload.

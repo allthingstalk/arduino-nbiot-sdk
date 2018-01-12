@@ -81,7 +81,7 @@ void setup()
   }
   
   DEBUG_STREAM.println();
-  DEBUG_STREAM.println("-- Environmental Sensing LoRa experiment --");
+  DEBUG_STREAM.println("-- Environmental Sensing NB-IoT experiment --");
   DEBUG_STREAM.println();
 
   initSensors();
