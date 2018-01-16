@@ -114,10 +114,11 @@ bool ATT_NBIOT::isAlive()
   return (readResponse(NULL, 450) == ResponseOK);
 }
 
-void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken)
+void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken, const char* apn)
 {
   _deviceId = deviceid;
   _deviceToken = devicetoken;
+  _apn = apn;
 }
 
 /****
@@ -186,7 +187,7 @@ void ATT_NBIOT::purgeAllResponsesRead()
 bool ATT_NBIOT::connect()
 {
   // nb-iot network
-  const char* apn = "iot.orange.be";
+  //const char* apn = "iot.orange.be";
   const char* forceOperator;  // "20610" for Orange Belgium
 
   // AllThingsTalk endpoint
@@ -211,7 +212,7 @@ bool ATT_NBIOT::connect()
 
   purgeAllResponsesRead();
 
-  if(!setApn(apn))
+  if(!setApn(_apn))
     return false;
 
   if(!setRadioActive(true))
@@ -459,36 +460,21 @@ bool ATT_NBIOT::sendMessage(const char* str)
   return sendMessage((const uint8_t*)str, strlen(str));
 }
 
-// Send cbor binary string
-bool ATT_NBIOT::sendMessage(String str)
-{
-  String message;
-  message += String(_deviceId);
-  message += "\n";
-  message += String(_deviceToken);
-  message += "\n";
-  message += str;
-  return sendMessage(message.c_str());
-}
-
 // Send integer value to a single asset
-bool ATT_NBIOT::sendMessage(int value, String asset)
+bool ATT_NBIOT::sendMessage(int value, const char* asset)
 {
-  String message;
-  message += String(_deviceId);
-  message += "\n";
-  message += String(_deviceToken);
-  message += "\n{\"";
-  message += asset;
-  message += "\":{\"value\":";
-  message += String(value);
-  message += "}}";
-  return sendMessage(message.c_str());
+  char buf[72 + 15 + strlen(asset) + 12]; // 12 to cover max value length
+  sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":%d}}", _deviceId, _deviceToken, asset, value);
+  return sendMessage(buf);
 }
 
 // Send float value to a single asset
-bool ATT_NBIOT::sendMessage(float value, String asset)
+bool ATT_NBIOT::sendMessage(float value, const char* asset)
 {
+  char buf[72 + 15 + strlen(asset) + 4]; // 4 to cover max value length
+  sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":%d}}", _deviceId, _deviceToken, asset, value);
+  return sendMessage(buf);
+  /*
   String message;
   message += String(_deviceId);
   message += "\n";
@@ -499,44 +485,31 @@ bool ATT_NBIOT::sendMessage(float value, String asset)
   message += String(value);
   message += "}}";
   return sendMessage(message.c_str());
+  */
 }
 
 // Send boolean value to a single asset
-bool ATT_NBIOT::sendMessage(bool value, String asset)
+bool ATT_NBIOT::sendMessage(bool value, const char* asset)
 {
-  String message;
-  message += String(_deviceId);
-  message += "\n";
-  message += String(_deviceToken);
-  message += "\n{\"";
-  message += asset;
-  message += "\":{\"value\":";
+  char buf[72 + 15 + strlen(asset) + 5]; // 5 max length of "true" and "false"
   if(value)
-    message += "true";
+    sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":true}}", _deviceId, _deviceToken, asset);
   else
-    message += "false";
-  message += "}}";
-  return sendMessage(message.c_str());
+    sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":false}}", _deviceId, _deviceToken, asset);
+
+  return sendMessage(buf); 
 }
 
 // Send string value to a single asset
-bool ATT_NBIOT::sendMessage(const char* value, String asset)
+bool ATT_NBIOT::sendMessage(const char* value, const char* asset)
 {
-  String message;
-  message += String(_deviceId);
-  message += "\n";
-  message += String(_deviceToken);
-  message += "\n{\"";
-  message += asset;
-  message += "\":{\"value\":\"";
-  message += value;
-  message += "\"}}";
-  return sendMessage(message.c_str());
+  char buf[72 + 17 + strlen(asset) + strlen(value)];  // 17 fixed chars = {" ": {"value": " "}}
+  sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":\"%s\"}}", _deviceId, _deviceToken, asset, value);
+  return sendMessage(buf);
 }
 
 /****
- * AT+NSOST=0,"194.78.195.244",1022,11,"48656c6c6f20576f726c64"
- * AT+NSOST=0,"52.166.32.29",5684,11,"48656C6C6F2047656E74"
+ *
  */
 bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
 {
@@ -637,11 +610,21 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
     print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buffer[i]))));
   }
   
+  // Print actual payload
+  /*
   char buff[size];
   for (int i = 0; i < size; ++i) {
-    sprintf(buff, "%x", data[i]);
+    sprintf(buff, "%02x", data[i]);
     print(buff);
   }
+  println("\"");
+  */
+  char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	for (unsigned char i = 0; i < size; i++)
+  {
+		print(hexTable[data[i] / 16]);
+ 		print(hexTable[data[i] % 16]);
+	}
   println("\"");
   
   return (readResponse() == ResponseOK);
@@ -649,6 +632,7 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
 
 void ATT_NBIOT::printCbor(unsigned char* data, unsigned int size)
 {
+  /*
   char buff[size];
   for (int i = 0; i < size; ++i) {
     //sprintf(buff, "%x", data[i]);
@@ -656,9 +640,8 @@ void ATT_NBIOT::printCbor(unsigned char* data, unsigned int size)
     print(buff);
   }
   println();
-  
-  /*
-  // Print actual payload
+  */
+
   char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	for (unsigned char i = 0; i < size; i++)
   {
@@ -666,7 +649,6 @@ void ATT_NBIOT::printCbor(unsigned char* data, unsigned int size)
  		print(hexTable[data[i] % 16]);
 	}
   println();
-  */
 }
 
 /****

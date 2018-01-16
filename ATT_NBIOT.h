@@ -48,7 +48,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     uint32_t getDefaultBaudrate() { return 9600; };
 
     // Create an instance of an AllThingsTalk device
-    void setAttDevice(const char* deviceid, const char* devicetoken);
+    void setAttDevice(const char* deviceid, const char* devicetoken, const char* apn);
     
     // Initializes the modem instance. Sets the modem and debug stream and the on-off power pins.
     void init(Stream& stream, Stream& debug, int8_t onoffPin);
@@ -80,13 +80,12 @@ class ATT_NBIOT: public Sodaq_AT_Device
     // generic send functions
     bool sendMessage(const uint8_t* buffer, size_t size);
     bool sendMessage(const char* str);
-    bool sendMessage(String str);
     
     // send 1 value to 1 asset
-    bool sendMessage(int value, String asset);
-    bool sendMessage(bool value, String asset);
-    bool sendMessage(float value, String asset);
-    bool sendMessage(const char* value, String asset);
+    bool sendMessage(int value, const char* asset);
+    bool sendMessage(bool value, const char* asset);
+    bool sendMessage(float value, const char* asset);
+    bool sendMessage(const char* value, const char* asset);
     
     // send binary payload
     bool sendPayload(void* packet, unsigned char size);
@@ -158,6 +157,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     const char* _port;
     const char* _deviceId;
     const char* _deviceToken;
+    const char* _apn;
 
     static bool startsWith(const char* pre, const char* str);
 

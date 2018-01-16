@@ -24,7 +24,7 @@ class CborBuilder {
 
   public:
     CborBuilder(ATT_NBIOT &nbiot);
-    CborBuilder(ATT_NBIOT &nbiot, uint32_t initalCapacity);
+    CborBuilder(ATT_NBIOT &nbiot, uint32_t initialCapacity);
     ~CborBuilder();
 
     unsigned char *getData();
@@ -34,7 +34,14 @@ class CborBuilder {
     void reset();
     bool send();
     void printCbor();
-    void addInteger(String asset, int value);
+
+    void addBoolean(bool value, const String asset);
+    void addInteger(int value, const String asset);
+    void addNumber(float number, const String asset);
+    void addString(const String value, const String asset);
+    void addGps(int latitude, int longitude, int altitude, const String asset);
+
+    void map(const unsigned int size);
 
     void init(unsigned int initalCapacity);
     unsigned char *buffer;
@@ -51,7 +58,6 @@ class CborBuilder {
     void writeString(const char *data, const unsigned int size);
     void writeString(const String str);
     void writeArray(const unsigned int size);
-    void writeMap(const unsigned int size);
     void writeTag(const uint32_t tag);
     void writeSpecial(const uint32_t special);
  

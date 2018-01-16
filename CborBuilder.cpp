@@ -7,18 +7,18 @@ CborBuilder::CborBuilder(ATT_NBIOT &nbiot) {
   init(256);
 }
 
-CborBuilder::CborBuilder(ATT_NBIOT &nbiot, const uint32_t initalCapacity) {
+CborBuilder::CborBuilder(ATT_NBIOT &nbiot, const uint32_t initialCapacity) {
   _nbiot = &nbiot;
-  init(initalCapacity);
+  init(initialCapacity);
 }
 
 CborBuilder::~CborBuilder() {
   delete buffer;
 }
 
-void CborBuilder::init(unsigned int initalCapacity) {
-  this->capacity = initalCapacity;
-  this->buffer = new unsigned char[initalCapacity];
+void CborBuilder::init(unsigned int initialCapacity) {
+  this->capacity = initialCapacity;
+  this->buffer = new unsigned char[initialCapacity];
   this->offset = 0;
 }
 
@@ -33,11 +33,39 @@ bool CborBuilder::send()
   return _nbiot->sendCbor(buffer, offset);
 }
 
-void CborBuilder::addInteger(String asset, int value)
+void CborBuilder::addBoolean(bool value, const String asset)
 {
-  writeMap(1);
   writeString(asset);
   writeInt(value);
+}
+
+void CborBuilder::addInteger(int value, const String asset)
+{
+  writeString(asset);
+  writeInt(value);
+}
+
+void CborBuilder::addNumber(float number, const String asset)
+{
+  
+}
+
+void CborBuilder::addString(const String value, const String asset)
+{
+  writeString(asset);
+  writeString(value);
+}
+
+void CborBuilder::addGps(int latitude, int longitude, int altitude, const String asset)
+{
+  writeString(asset);
+  map(3);
+  writeString("lat");
+  writeInt((const int32_t)latitude);
+  writeString("lon");
+  writeInt((const int32_t)longitude);
+  writeString("alt");
+  writeInt((const int32_t)altitude);
 }
 
 void CborBuilder::printCbor()
@@ -188,7 +216,8 @@ void CborBuilder::writeArray(const unsigned int size) {
   writeTypeAndValue(4, (uint32_t)size);
 }
 
-void CborBuilder::writeMap(const unsigned int size) {
+//
+void CborBuilder::map(const unsigned int size) {
   writeTypeAndValue(5, (uint32_t)size);
 }
 
