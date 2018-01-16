@@ -4,8 +4,10 @@ This is a SDK by AllThingsTalk that provides connectivity to their cloud through
 
 ## Hardware
 
-This SDK has been tested to work with the following hardware
-- [Sodaq Mbili](http://support.sodaq.com/sodaq-one/sodaq-mbili-1284p/) with ublox NB-IoT bee
+This library has been developed for:
+
+* Sodaq Mbili
+* Sodaq UBEE (ublox SARA-N211 nb-iot radio)
 
 ## Installation
 
@@ -41,9 +43,8 @@ CborBuilder payload(nbiot);  // Construct a payload object
 ```
 ```
   payload.reset();
-  
-  payload.addInteger("counter", 25);
-  
+  payload.map(1);  // set number of datapoints in payload
+  payload.addInteger(25, "counter");
   payload.send();
 ```
 
@@ -59,24 +60,14 @@ PayloadBuilder payload(nbiot);  // Construct a payload object
 ```
 ```
   payload.reset();
-
   payload.addInteger(25);
   payload.addNumber(false);
   payload.addNumber(3.1415926);
-
   payload.send();
 ```
 
 ## Examples
 
-### Basic example
-
 Basic example showing all fundamental parts to set up a working example. Send data from the device, over NB-IoT to AllThingsTalk.
 
-* `counter.ino`
-
-### Rapid Development Kit experiments
-
-* `count-visits.ino` Count the amount of visits to a room for facility management
-* `environmental-sensing.ino` Measure your surrounding
-* `guard-your-stuff.ino` Track an object when it starts to move
+* `counter`
