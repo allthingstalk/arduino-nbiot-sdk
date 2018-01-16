@@ -21,6 +21,7 @@
 
 #include "ATT_NBIOT.h"
 #include <Sodaq_wdt.h>
+#include "keys.h"  // Device credentials
 
 #define DEBUG  // We want debug info
 
@@ -101,6 +102,9 @@ ATT_NBIOT::ATT_NBIOT() :
   _CSQtime(0),
   _minRSSI(-113) // dBm
 {
+  _deviceId = DEVICE_ID;
+  _deviceToken = DEVICE_TOKEN;
+  _apn = APN;
 }
 
 /****
@@ -114,6 +118,9 @@ bool ATT_NBIOT::isAlive()
   return (readResponse(NULL, 450) == ResponseOK);
 }
 
+/***
+ * If you need to manually set or override the credentials from the keys.h file
+ */
 void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken, const char* apn)
 {
   _deviceId = deviceid;

@@ -28,13 +28,6 @@
 
 #define baud 9600
 
-// AllThingsTalk Device
-//const char* deviceid = "Ddjdc1aYskfXGva9z6gelQWO";
-//const char* devicetoken = "spicy:4O3SMDqz3ygu80Nw7ybfJYdrR1FwCzN5fMFwuTD1";
-const char* deviceid = "Iz3eoyfF0ksboxBgeDWQk9vz";
-const char* devicetoken = "maker:4LDG64opf84sW1VeVrytwWYzF78tb5nzUinN6Mf1";
-const char* apn = "iot.orange.be";
-
 ATT_NBIOT nbiot;
 
 void setup()
@@ -46,7 +39,6 @@ void setup()
   
   DEBUG_STREAM.println("Initializing and connecting... ");
 
-  nbiot.setAttDevice(deviceid, devicetoken, apn);
   nbiot.init(MODEM_STREAM, DEBUG_STREAM, MODEM_ON_OFF_PIN);
   
   if(nbiot.connect())
@@ -59,16 +51,13 @@ void setup()
   
 }
 
-char buf[72];
 int counter = 1;  // Initialize counter
 unsigned long sendNextAt = 0;  // Keep track of time
 void loop() 
 {
   if(sendNextAt < millis())
   {
-    //nbiot.sendMessage(counter, "counter");  // Send counter value
-    //nbiot.sendMessage(counter%2==0?false:true, "motion");  // Send counter value
-    nbiot.sendMessage("hey now brown cow", "d");  // Send counter value
+    nbiot.sendMessage(counter, "counter");  // Send counter value
     counter++;
     sendNextAt = millis() + 10000;
   }
