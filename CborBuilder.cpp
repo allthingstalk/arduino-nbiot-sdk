@@ -36,7 +36,10 @@ bool CborBuilder::send()
 void CborBuilder::addBoolean(bool value, const String asset)
 {
   writeString(asset);
-  writeInt(value);
+  if(value)
+    writeSpecial(21);
+  else
+    writeSpecial(20);
 }
 
 void CborBuilder::addInteger(int value, const String asset)
@@ -47,7 +50,7 @@ void CborBuilder::addInteger(int value, const String asset)
 
 void CborBuilder::addNumber(float number, const String asset)
 {
-  
+  // TODO
 }
 
 void CborBuilder::addString(const String value, const String asset)
@@ -58,19 +61,15 @@ void CborBuilder::addString(const String value, const String asset)
 
 void CborBuilder::addGps(int latitude, int longitude, int altitude, const String asset)
 {
+  // TODO change int to numbers
   writeString(asset);
   map(3);
-  writeString("lat");
+  writeString("latitude");
   writeInt((const int32_t)latitude);
-  writeString("lon");
+  writeString("longitude");
   writeInt((const int32_t)longitude);
-  writeString("alt");
+  writeString("altitude");
   writeInt((const int32_t)altitude);
-}
-
-void CborBuilder::printCbor()
-{
-  return _nbiot->printCbor(buffer, offset);
 }
 
 unsigned char *CborBuilder::getData() {

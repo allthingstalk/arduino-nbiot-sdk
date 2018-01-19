@@ -33,7 +33,6 @@ class CborBuilder {
     virtual void putBytes(const unsigned char *data, const unsigned int size);
     void reset();
     bool send();
-    void printCbor();
 
     void addBoolean(bool value, const String asset);
     void addInteger(int value, const String asset);

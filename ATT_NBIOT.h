@@ -77,26 +77,24 @@ class ATT_NBIOT: public Sodaq_AT_Device
 
     int createSocket(uint16_t localPort = 0);
     
-    // generic send functions
+    // Generic send functions
     bool sendMessage(const uint8_t* buffer, size_t size);
-    bool sendMessage(const char* str);
     
-    // send 1 value to 1 asset
+    // Send 1 value to 1 asset
     bool sendMessage(int value, const char* asset);
     bool sendMessage(bool value, const char* asset);
-    bool sendMessage(float value, const char* asset);
+    bool sendMessage(double value, const char* asset);
     bool sendMessage(const char* value, const char* asset);
+    bool sendMessage(String value, const char* asset);
     
-    // send binary payload
+    // Send binary payload
     bool sendPayload(void* packet, unsigned char size);
     
-    // send cbor payload
+    // Send cbor payload
     bool sendCbor(unsigned char* data, unsigned int size);
     
     int getSentMessagesCount(SentMessageStatus filter);
     
-    void printCbor(unsigned char* data, unsigned int size);
-       
   protected:
     // override
     ResponseTypes readResponse(char* buffer, size_t size, size_t* outSize, uint32_t timeout = SODAQ_AT_DEVICE_DEFAULT_READ_MS)
@@ -153,6 +151,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     // Use convertCSQ2RSSI if you have a CSQ value
     int _minRSSI;
     
+    // Network and device credentials
     const char* _udp;
     const char* _port;
     const char* _deviceId;
@@ -177,4 +176,3 @@ class ATT_NBIOT: public Sodaq_AT_Device
 };
 
 #endif
-

@@ -462,26 +462,13 @@ bool ATT_NBIOT::waitForSignalQuality(uint32_t timeout)
   return false;
 }
 
-bool ATT_NBIOT::sendMessage(const char* str)
-{
-  return sendMessage((const uint8_t*)str, strlen(str));
-}
+/****
+ * Send payloads as basic json
+ * One value (integer, double, boolean or string) to one asset
+ */
 
-// Send integer value to a single asset
 bool ATT_NBIOT::sendMessage(int value, const char* asset)
 {
-  char buf[72 + 15 + strlen(asset) + 12]; // 12 to cover max value length
-  sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":%d}}", _deviceId, _deviceToken, asset, value);
-  return sendMessage(buf);
-}
-
-// Send float value to a single asset
-bool ATT_NBIOT::sendMessage(float value, const char* asset)
-{
-  char buf[72 + 15 + strlen(asset) + 4]; // 4 to cover max value length
-  sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":%d}}", _deviceId, _deviceToken, asset, value);
-  return sendMessage(buf);
-  /*
   String message;
   message += String(_deviceId);
   message += "\n";
@@ -491,28 +478,54 @@ bool ATT_NBIOT::sendMessage(float value, const char* asset)
   message += "\":{\"value\":";
   message += String(value);
   message += "}}";
-  return sendMessage(message.c_str());
-  */
+  return sendMessage((const uint8_t*)message.c_str(), strlen(message.c_str()));
 }
 
-// Send boolean value to a single asset
+bool ATT_NBIOT::sendMessage(double value, const char* asset)
+{
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":";
+  message += String(value);
+  message += "}}";
+  return sendMessage((const uint8_t*)message.c_str(), strlen(message.c_str()));
+}
+
 bool ATT_NBIOT::sendMessage(bool value, const char* asset)
 {
-  char buf[72 + 15 + strlen(asset) + 5]; // 5 max length of "true" and "false"
-  if(value)
-    sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":true}}", _deviceId, _deviceToken, asset);
-  else
-    sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":false}}", _deviceId, _deviceToken, asset);
-
-  return sendMessage(buf); 
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":";
+  message += value == true ? "true" : "false";
+  message += "}}";
+  return sendMessage((const uint8_t*)message.c_str(), strlen(message.c_str()));
 }
 
-// Send string value to a single asset
+bool ATT_NBIOT::sendMessage(String value, const char* asset)
+{
+  sendMessage(value.c_str(), asset);
+}
+
 bool ATT_NBIOT::sendMessage(const char* value, const char* asset)
 {
-  char buf[72 + 17 + strlen(asset) + strlen(value)];  // 17 fixed chars = {" ": {"value": " "}}
-  sprintf(buf,"%s\n%s\n{\"%s\":{\"value\":\"%s\"}}", _deviceId, _deviceToken, asset, value);
-  return sendMessage(buf);
+  String message;
+  message += String(_deviceId);
+  message += "\n";
+  message += String(_deviceToken);
+  message += "\n{\"";
+  message += asset;
+  message += "\":{\"value\":\"";
+  message += String(value);
+  message += "\"}}";
+  return sendMessage((const uint8_t*)message.c_str(), strlen(message.c_str()));
 }
 
 /****
@@ -542,19 +555,11 @@ bool ATT_NBIOT::sendMessage(const uint8_t* buffer, size_t size)
 }
 
 /****
- * Create payload string
+ * Create binary payload
  */
 bool ATT_NBIOT::sendPayload(void* packet, unsigned char size)
 {
-  // Print credentials string
-  String message;
-  message += String(_deviceId);
-  message += "\n";
-  message += String(_deviceToken);
-  message += "\n";
-  
-  const char* buffer = message.c_str();
-  size_t lng = strlen(message.c_str());  // Fixed 72 chars "deviceid\ndevicetoken\n"
+  int lng = 72;  // Fixed 72 chars "deviceid\ndevicetoken\n"
 
   // Print AT command
   print("AT+NSOST=0,\"");
@@ -564,12 +569,14 @@ bool ATT_NBIOT::sendPayload(void* packet, unsigned char size)
   print(",");
   print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
   print(",\"");
- 
+
   // Print ATT device credentials part of payload
+  char buf[lng];
+  sprintf(buf,"%s\n%s\n", _deviceId, _deviceToken);
   for (uint16_t i = 0; i < lng; ++i)
   {
-    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buffer[i]))));
-    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buffer[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buf[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
   }
   
   // Print actual payload
@@ -585,21 +592,11 @@ bool ATT_NBIOT::sendPayload(void* packet, unsigned char size)
 }
 
 /****
- *
+ * Create cbor payload
  */
 bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
 {
-  print("SIZE: ");
-  println(size);
-  // Print credentials string
-  String message;
-  message += String(_deviceId);
-  message += "\n";
-  message += String(_deviceToken);
-  message += "\n";
-  
-  const char* buffer = message.c_str();
-  size_t lng = strlen(message.c_str());  // Fixed 72 chars "deviceid\ndevicetoken\n"
+  int lng = 72;  // Fixed 72 chars "deviceid\ndevicetoken\n"
 
   // Print AT command
   print("AT+NSOST=0,\"");
@@ -609,23 +606,29 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
   print(",");
   print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
   print(",\"");
- 
+  //print("\"");
+
   // Print ATT device credentials part of payload
+  char buf[lng];
+  sprintf(buf,"%s\n%s\n", _deviceId, _deviceToken);
   for (uint16_t i = 0; i < lng; ++i)
   {
-    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buffer[i]))));
-    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buffer[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buf[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
   }
+  //print(" ");
   
   // Print actual payload
   /*
   char buff[size];
   for (int i = 0; i < size; ++i) {
-    sprintf(buff, "%02x", data[i]);
+    sprintf(buff, "%02X", data[i]);
     print(buff);
   }
-  println("\"");
   */
+  //println("\"");
+  //print(" ");
+    
   char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	for (unsigned char i = 0; i < size; i++)
   {
@@ -633,29 +636,9 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
  		print(hexTable[data[i] % 16]);
 	}
   println("\"");
-  
-  return (readResponse() == ResponseOK);
-}
 
-void ATT_NBIOT::printCbor(unsigned char* data, unsigned int size)
-{
-  /*
-  char buff[size];
-  for (int i = 0; i < size; ++i) {
-    //sprintf(buff, "%x", data[i]);
-    sprintf(buff, "%02x", data[i]);
-    print(buff);
-  }
-  println();
-  */
-
-  char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	for (unsigned char i = 0; i < size; i++)
-  {
-		print(hexTable[data[i] / 16]);
- 		print(hexTable[data[i] % 16]);
-	}
-  println();
+  //return (readResponse() == ResponseOK);
+  return true;
 }
 
 /****

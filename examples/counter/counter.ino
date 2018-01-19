@@ -20,6 +20,7 @@
  */
 
 #include "ATT_NBIOT.h"
+#include <CborBuilder.h>
 
 // Mbili support
 #define DEBUG_STREAM Serial
@@ -29,6 +30,8 @@
 #define baud 9600
 
 ATT_NBIOT nbiot;
+//CborBuilder payload(nbiot);
+//PayloadBuilder payload(nbiot);
 
 void setup()
 {
@@ -57,7 +60,23 @@ void loop()
 {
   if(sendNextAt < millis())
   {
-    nbiot.sendMessage(counter, "counter");  // Send counter value
+    String s = "unicorn: "+String(counter);
+    DEBUG_STREAM.println(s);
+
+    // Send data using regular json
+    //nbiot.sendMessage(counter, "counter");
+
+    // Send data using Cbor
+    //payload.reset();
+    //payload.map(1);
+    //payload.addInteger(counter, "counter");
+    //payload.send();
+
+    // Send data using binary payload, make sure the decoding is set at AllThingsTalk
+    //payload.reset();
+    //payload.addInteger(counter);
+    //payload.send();
+
     counter++;
     sendNextAt = millis() + 10000;
   }
