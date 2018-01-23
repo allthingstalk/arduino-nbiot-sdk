@@ -68,16 +68,16 @@ void CborBuilder::addNumber(double value, const String asset)
   //  putByte(thing.bytes[ii]);
   }
   // 8 bytes for the number
-  //putByte(0x40);
-  //putByte(0x09);
-  //putByte(0x21);
-  //putByte(0xFB);
-  //putByte(0x4D);
-  //putByte(0x12);
-  //putByte(0xD8);
-  //putByte(0x4A);
-  putByte(thing.bytes[0]);
-  putByte(thing.bytes[1]);
+  putByte(0x40);
+  putByte(0x09);
+  putByte(0x21);
+  putByte(0xFB);
+  putByte(0x4D);
+  putByte(0x12);
+  putByte(0xD8);
+  putByte(0x4A);
+  //putByte(thing.bytes[0]);
+  //putByte(thing.bytes[1]);
   //putByte(0x21);
   //putByte(0xFB);
   //putByte(0x4D);

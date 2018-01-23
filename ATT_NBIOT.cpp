@@ -621,23 +621,23 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
   
   // Print actual payload
   
+  /*
   char buff[size];
   for (int i = 0; i < size; ++i) {
     sprintf(buff, "%02X", data[i]);
     print(buff);
   }
+  */
   
   
   //println("\"");
-  //print(" ");
-  /*  
+  //print(" ");  
   char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
   for (unsigned char i = 0; i < size; i++)
   {
 	  print(hexTable[data[i] / 16]);
     print(hexTable[data[i] % 16]);
   }
-  */
   //println("\"");
   println();
 
