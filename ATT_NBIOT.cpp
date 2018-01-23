@@ -580,7 +580,7 @@ bool ATT_NBIOT::sendPayload(void* packet, unsigned char size)
     print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
   }
   
-  // Print actual payload
+  // Print actual payload from binary buffer
   char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	for (unsigned char i = 0; i < size; i++)
   {
@@ -600,49 +600,33 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
   int lng = 72;  // Fixed 72 chars "deviceid\ndevicetoken\n"
 
   // Print AT command
-  //print("AT+NSOST=0,\"");
-  //print(_udp);
-  //print("\",");
-  //print(_port);
-  //print(",");
-  //print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
-  //print(",\"");
-  //print("\"");
+  print("AT+NSOST=0,\"");
+  print(_udp);
+  print("\",");
+  print(_port);
+  print(",");
+  print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
+  print(",\"");
 
   // Print ATT device credentials part of payload
   char buf[lng];
   sprintf(buf,"%s\n%s\n", _deviceId, _deviceToken);
   for (uint16_t i = 0; i < lng; ++i)
   {
-    //print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buf[i]))));
-    //print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buf[i]))));
+    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
   }
-  //print(" ");
   
-  // Print actual payload
-  
-  /*
-  char buff[size];
-  for (int i = 0; i < size; ++i) {
-    sprintf(buff, "%02X", data[i]);
-    print(buff);
-  }
-  */
-  
-  
-  //println("\"");
-  //print(" ");  
+  // Print actual payload from cbor buffer
   char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
   for (unsigned char i = 0; i < size; i++)
   {
 	  print(hexTable[data[i] / 16]);
     print(hexTable[data[i] % 16]);
   }
-  //println("\"");
-  println();
+  println("\"");
 
-  //return (readResponse() == ResponseOK);
-  return true;
+  return (readResponse() == ResponseOK);
 }
 
 /****

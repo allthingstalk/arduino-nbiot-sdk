@@ -1,13 +1,36 @@
+/*    _   _ _ _____ _    _              _____     _ _     ___ ___  _  __
+ *   /_\ | | |_   _| |_ (_)_ _  __ _ __|_   _|_ _| | |__ / __|   \| |/ /
+ *  / _ \| | | | | | ' \| | ' \/ _` (_-< | |/ _` | | / / \__ \ |) | ' <
+ * /_/ \_\_|_| |_| |_||_|_|_||_\__, /__/ |_|\__,_|_|_\_\ |___/___/|_|\_\
+ *                             |___/
+ *
+ * Copyright 2018 AllThingsTalk
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "CborBuilder.h"
 #include "Arduino.h"
 #include <stdlib.h>
 
-CborBuilder::CborBuilder(ATT_NBIOT &nbiot) {
+CborBuilder::CborBuilder(ATT_NBIOT &nbiot)
+{
   _nbiot = &nbiot;
   init(256);
 }
 
-CborBuilder::CborBuilder(ATT_NBIOT &nbiot, const uint32_t initialCapacity) {
+CborBuilder::CborBuilder(ATT_NBIOT &nbiot, const uint32_t initialCapacity)
+{
   _nbiot = &nbiot;
   init(initialCapacity);
 }
@@ -16,7 +39,8 @@ CborBuilder::~CborBuilder() {
   delete buffer;
 }
 
-void CborBuilder::init(unsigned int initialCapacity) {
+void CborBuilder::init(unsigned int initialCapacity)
+{
   this->capacity = initialCapacity;
   this->buffer = new unsigned char[initialCapacity];
   this->offset = 0;
@@ -50,40 +74,46 @@ void CborBuilder::addInteger(int value, const String asset)
 
 void CborBuilder::addNumber(double value, const String asset)
 {
-  // convert double to bytes array
+  writeString(asset);
+  addNumber(value);
+}
+
+void CborBuilder::addGps(double latitude, double longitude, double altitude, const String asset)
+{
+  writeString(asset);
+  map(3);
+  writeString("latitude");
+  addNumber(latitude);
+  writeString("longitude");
+  addNumber(longitude);
+  writeString("altitude");
+  addNumber(altitude);
+}
+
+// Convert double to byte array and add it to Cbor buffer
+void CborBuilder::addNumber(double value)
+{
+  const int size = sizeof(value);  // Size 4 or 8 for double
+  
+  // Convert double to bytes array
   union {
     double a;
-    unsigned char bytes[8];
+    unsigned char bytes[size];
   } thing;
-
+  
+  if(size==4)
+    putByte(0xFA);
+  else if(size==8)
+    putByte(0xFB);
+  else
+    return;  // Unknown float size
+  
   thing.a = value;
-  
-  writeString(asset);
-  // 27 for 64bit float tag
-  putByte(0xFB);
-  
   int ii;
-  for (ii=7; ii>=0; ii--)
+  for (ii=(size-1); ii>=0; ii--)
   {
-  //  putByte(thing.bytes[ii]);
-  }
-  // 8 bytes for the number
-  putByte(0x40);
-  putByte(0x09);
-  putByte(0x21);
-  putByte(0xFB);
-  putByte(0x4D);
-  putByte(0x12);
-  putByte(0xD8);
-  putByte(0x4A);
-  //putByte(thing.bytes[0]);
-  //putByte(thing.bytes[1]);
-  //putByte(0x21);
-  //putByte(0xFB);
-  //putByte(0x4D);
-  //putByte(0x12);
-  //putByte(0xD8);
-  //putByte(0x4A);
+    putByte(thing.bytes[ii]);
+  }  
 }
 
 void CborBuilder::addString(const String value, const String asset)
@@ -92,38 +122,18 @@ void CborBuilder::addString(const String value, const String asset)
   writeString(value);
 }
 
-void CborBuilder::addGps(int latitude, int longitude, int altitude, const String asset)
+unsigned char *CborBuilder::getData()
 {
-  // TODO change int to numbers
-  writeString(asset);
-  map(3);
-  writeString("latitude");
-  writeInt((const int32_t)latitude);
-  writeString("longitude");
-  writeInt((const int32_t)longitude);
-  writeString("altitude");
-  writeInt((const int32_t)altitude);
-}
-
-unsigned char *CborBuilder::getData() {
   return buffer;
 }
 
-unsigned int CborBuilder::getSize() {
+unsigned int CborBuilder::getSize()
+{
   return offset;
 }
 
-void CborBuilder::putByte(unsigned char value) {
-  /*
-  if(offset < capacity) {
-    buffer[offset++] = value;
-  } else {
-    capacity *= 2;
-    buffer = (unsigned char *) realloc(buffer, capacity);
-    buffer[offset++] = value;
-  }
-  */
-  
+void CborBuilder::putByte(unsigned char value)
+{
   if(offset < capacity) {
     buffer[offset++] = value;
   } else {
@@ -131,16 +141,8 @@ void CborBuilder::putByte(unsigned char value) {
   }
 }
 
-void CborBuilder::putBytes(const unsigned char *data, const unsigned int size) {
-  /*
-  while(offset + size > capacity) {
-    capacity *= 2;
-    buffer = (unsigned char *) realloc(buffer, capacity);
-  }
-  memcpy(buffer + offset, data, size);
-  offset += size;
-  */
-  
+void CborBuilder::putBytes(const unsigned char *data, const unsigned int size)
+{
   if(offset + size - 1 < capacity) {
     memcpy(buffer + offset, data, size);
     offset += size;
@@ -151,7 +153,8 @@ void CborBuilder::putBytes(const unsigned char *data, const unsigned int size) {
 
 // Writer functions
 
-void CborBuilder::writeTypeAndValue(uint8_t majorType, const uint32_t value) {
+void CborBuilder::writeTypeAndValue(uint8_t majorType, const uint32_t value)
+{
   majorType <<= 5;
   if(value < 24) {
     putByte(majorType | value);
@@ -171,7 +174,8 @@ void CborBuilder::writeTypeAndValue(uint8_t majorType, const uint32_t value) {
   }
 }
 
-void CborBuilder::writeTypeAndValue(uint8_t majorType, const uint64_t value) {
+void CborBuilder::writeTypeAndValue(uint8_t majorType, const uint64_t value)
+{
   majorType <<= 5;
   if(value < 24ULL) {
     putByte(majorType | value);
@@ -200,20 +204,23 @@ void CborBuilder::writeTypeAndValue(uint8_t majorType, const uint64_t value) {
   }
 }
 
-void CborBuilder::writeInt(const int value) {
-  // This will break on 64-bit platforms
+void CborBuilder::writeInt(const int value)
+{
   writeTypeAndValue(0, (uint32_t)value);
 }
 
-void CborBuilder::writeInt(const uint32_t value) {
+void CborBuilder::writeInt(const uint32_t value)
+{
   writeTypeAndValue(0, value);
 }
 
-void CborBuilder::writeInt(const uint64_t value) {
+void CborBuilder::writeInt(const uint64_t value)
+{
   writeTypeAndValue(0, value);
 }
 
-void CborBuilder::writeInt(const int64_t value) {
+void CborBuilder::writeInt(const int64_t value)
+{
   if(value < 0) {
     writeTypeAndValue(1, (uint64_t) -(value+1));
   } else {
@@ -221,7 +228,8 @@ void CborBuilder::writeInt(const int64_t value) {
   }
 }
 
-void CborBuilder::writeInt(const int32_t value) {
+void CborBuilder::writeInt(const int32_t value)
+{
   if(value < 0) {
     writeTypeAndValue(1, (uint32_t) -(value+1));
   } else {
@@ -229,33 +237,40 @@ void CborBuilder::writeInt(const int32_t value) {
   }
 }
 
-void CborBuilder::writeBytes(const unsigned char *data, const unsigned int size) {
+void CborBuilder::writeBytes(const unsigned char *data, const unsigned int size)
+{
   writeTypeAndValue(2, (uint32_t)size);
   putBytes(data, size);
 }
 
-void CborBuilder::writeString(const char *data, const unsigned int size) {
+void CborBuilder::writeString(const char *data, const unsigned int size)
+{
   writeTypeAndValue(3, (uint32_t)size);
   putBytes((const unsigned char *)data, size);
 }
 
-void CborBuilder::writeString(const String str) {
+void CborBuilder::writeString(const String str)
+{
   writeTypeAndValue(3, (uint32_t)str.length());
   putBytes((const unsigned char *)str.c_str(), str.length());
 }
 
-void CborBuilder::writeArray(const unsigned int size) {
+void CborBuilder::writeArray(const unsigned int size)
+{
   writeTypeAndValue(4, (uint32_t)size);
 }
 
-void CborBuilder::map(const unsigned int size) {
+void CborBuilder::map(const unsigned int size)
+{
   writeTypeAndValue(5, (uint32_t)size);
 }
 
-void CborBuilder::writeTag(const uint32_t tag) {
+void CborBuilder::writeTag(const uint32_t tag)
+{
   writeTypeAndValue(6, tag);
 }
 
-void CborBuilder::writeSpecial(const uint32_t special) {
+void CborBuilder::writeSpecial(const uint32_t special)
+{
   writeTypeAndValue(7, special);
 }
