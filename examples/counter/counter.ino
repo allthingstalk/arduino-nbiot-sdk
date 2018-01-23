@@ -24,6 +24,11 @@
  * You can send the data either using standard Json, Cbor or a binary
  * payload.
  */
+ 
+// Uncomment your selected methd for sending data
+#define JSON
+//#define CBOR
+//#define BINARY
 
 #include "ATT_NBIOT.h"
 #include <CborBuilder.h>
@@ -37,8 +42,17 @@
 #define baud 9600
 
 ATT_NBIOT nbiot;
-//CborBuilder payload(nbiot);
-//PayloadBuilder payload(nbiot);
+
+#ifdef CBOR
+  #include <CborBuilder.h>
+  CborBuilder payload(nbiot);
+#endif
+
+#ifdef BINARY
+  #include <PayloadBuilder.h>
+  PayloadBuilder payload(nbiot);
+#endif
+
 
 void setup()
 {
@@ -66,19 +80,22 @@ void loop()
 {
   if(sendNextAt < millis())
   {
-    // Send data using regular json
+    #ifdef JSON  // Send data using regular json
     nbiot.sendMessage(counter, "counter");
+    #endif
 
-    // Send data using Cbor
-    //payload.reset();
-    //payload.map(1);
-    //payload.addInteger(counter, "counter");
-    //payload.send();
+    #ifdef CBOR  // Send data using Cbor
+    payload.reset();
+    payload.map(1);
+    payload.addInteger(counter, "counter");
+    payload.send();
+    #endif
 
-    // Send data using binary payload, make sure the decoding is set at AllThingsTalk
-    //payload.reset();
-    //payload.addInteger(counter);
-    //payload.send();
+    #ifdef BINARY  // Send data using binary payload, make sure the decoding is set at AllThingsTalk
+    payload.reset();
+    payload.addInteger(counter);
+    payload.send();
+    #endif
 
     counter++;
     sendNextAt = millis() + 10000;
