@@ -81,7 +81,7 @@ Basic example showing all fundamental parts to set up a working example. Send da
 Simply uncomment your selected method for sending data at the top of the sketch.
 
 ```
-// Uncomment your selected methd for sending data
+// Uncomment your selected method for sending data
 #define JSON
 //#define CBOR
 //#define BINARY

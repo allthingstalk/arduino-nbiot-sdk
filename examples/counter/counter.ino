@@ -25,7 +25,7 @@
  * payload.
  */
  
-// Uncomment your selected methd for sending data
+// Uncomment your selected method for sending data
 #define JSON
 //#define CBOR
 //#define BINARY
