@@ -18,9 +18,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+/****
+ * Basic example sending an integer counter to AllThingsTalk.
+ * You can send the data either using standard Json, Cbor or a binary
+ * payload.
+ */
 
 #include "ATT_NBIOT.h"
 #include <CborBuilder.h>
+#include <PayloadBuilder.h>
 
 // Mbili support
 #define DEBUG_STREAM Serial
@@ -51,7 +58,6 @@ void setup()
     DEBUG_STREAM.println("Connection failed!");
     while(true) {}  // No connection. No need to continue the program
   }
-  
 }
 
 int counter = 1;  // Initialize counter
@@ -60,11 +66,8 @@ void loop()
 {
   if(sendNextAt < millis())
   {
-    String s = "unicorn: "+String(counter);
-    DEBUG_STREAM.println(s);
-
     // Send data using regular json
-    //nbiot.sendMessage(counter, "counter");
+    nbiot.sendMessage(counter, "counter");
 
     // Send data using Cbor
     //payload.reset();

@@ -48,9 +48,42 @@ void CborBuilder::addInteger(int value, const String asset)
   writeInt(value);
 }
 
-void CborBuilder::addNumber(float number, const String asset)
+void CborBuilder::addNumber(double value, const String asset)
 {
-  // TODO
+  // convert double to bytes array
+  union {
+    double a;
+    unsigned char bytes[8];
+  } thing;
+
+  thing.a = value;
+  
+  writeString(asset);
+  // 27 for 64bit float tag
+  putByte(0xFB);
+  
+  int ii;
+  for (ii=7; ii>=0; ii--)
+  {
+  //  putByte(thing.bytes[ii]);
+  }
+  // 8 bytes for the number
+  //putByte(0x40);
+  //putByte(0x09);
+  //putByte(0x21);
+  //putByte(0xFB);
+  //putByte(0x4D);
+  //putByte(0x12);
+  //putByte(0xD8);
+  //putByte(0x4A);
+  putByte(thing.bytes[0]);
+  putByte(thing.bytes[1]);
+  //putByte(0x21);
+  //putByte(0xFB);
+  //putByte(0x4D);
+  //putByte(0x12);
+  //putByte(0xD8);
+  //putByte(0x4A);
 }
 
 void CborBuilder::addString(const String value, const String asset)
@@ -215,7 +248,6 @@ void CborBuilder::writeArray(const unsigned int size) {
   writeTypeAndValue(4, (uint32_t)size);
 }
 
-//
 void CborBuilder::map(const unsigned int size) {
   writeTypeAndValue(5, (uint32_t)size);
 }

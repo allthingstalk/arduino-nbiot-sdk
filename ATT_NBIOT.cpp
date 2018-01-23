@@ -95,21 +95,22 @@ static inline bool is_timedout(uint32_t from, uint32_t nr_ms)
 }
 
 /****
-* Constructor
-*/
+ * Constructor
+ */
 ATT_NBIOT::ATT_NBIOT() :
   _lastRSSI(0),
   _CSQtime(0),
   _minRSSI(-113) // dBm
 {
+  // Get credentials from keys.h file
   _deviceId = DEVICE_ID;
   _deviceToken = DEVICE_TOKEN;
   _apn = APN;
 }
 
 /****
-* Returns true if the modem replies to "AT" commands without timing out
-*/
+ * Returns true if the modem replies to "AT" commands without timing out
+ */
 bool ATT_NBIOT::isAlive()
 {
   _disableDiag = true;
@@ -119,7 +120,7 @@ bool ATT_NBIOT::isAlive()
 }
 
 /***
- * If you need to manually set or override the credentials from the keys.h file
+ * Manually set or override the credentials from the keys.h file
  */
 void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken, const char* apn)
 {
@@ -129,9 +130,9 @@ void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken, cons
 }
 
 /****
-* Initializes the modem instance
-* Sets the modem stream and the on-off power pins
-*/
+ * Initializes the modem instance
+ * Sets the modem stream and the on-off power pins
+ */
 void ATT_NBIOT::init(Stream& stream, Stream& debug, int8_t onoffPin)
 {
   debugPrintLn("[init] started.");
@@ -599,13 +600,13 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
   int lng = 72;  // Fixed 72 chars "deviceid\ndevicetoken\n"
 
   // Print AT command
-  print("AT+NSOST=0,\"");
-  print(_udp);
-  print("\",");
-  print(_port);
-  print(",");
-  print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
-  print(",\"");
+  //print("AT+NSOST=0,\"");
+  //print(_udp);
+  //print("\",");
+  //print(_port);
+  //print(",");
+  //print(lng+size);  // Length of ATT credentials + actual sensor data part of the payload
+  //print(",\"");
   //print("\"");
 
   // Print ATT device credentials part of payload
@@ -613,29 +614,32 @@ bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
   sprintf(buf,"%s\n%s\n", _deviceId, _deviceToken);
   for (uint16_t i = 0; i < lng; ++i)
   {
-    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buf[i]))));
-    print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
+    //print(static_cast<char>(NIBBLE_TO_HEX_CHAR(HIGH_NIBBLE(buf[i]))));
+    //print(static_cast<char>(NIBBLE_TO_HEX_CHAR(LOW_NIBBLE(buf[i]))));
   }
   //print(" ");
   
   // Print actual payload
-  /*
+  
   char buff[size];
   for (int i = 0; i < size; ++i) {
     sprintf(buff, "%02X", data[i]);
     print(buff);
   }
-  */
+  
+  
   //println("\"");
   //print(" ");
-    
+  /*  
   char hexTable[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	for (unsigned char i = 0; i < size; i++)
+  for (unsigned char i = 0; i < size; i++)
   {
-		print(hexTable[data[i] / 16]);
- 		print(hexTable[data[i] % 16]);
-	}
-  println("\"");
+	  print(hexTable[data[i] / 16]);
+    print(hexTable[data[i] % 16]);
+  }
+  */
+  //println("\"");
+  println();
 
   //return (readResponse() == ResponseOK);
   return true;

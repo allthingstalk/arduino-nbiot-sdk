@@ -142,7 +142,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     // For example UBlox
     //   1              -111 dBm
     //   2..30          -109 to -53 dBm
-    int8_t _lastRSSI;   // 0 not known or not detectable
+    int8_t _lastRSSI;  // 0 not known or not detectable
 
     // This is the number of second it took when CSQ was record last
     uint8_t _CSQtime;

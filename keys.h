@@ -1,3 +1,6 @@
+/****
+ * Enter your AllThingsTalk device credentials below
+ */
 #ifndef KEYS_h
 #define KEYS_h
 const char* DEVICE_ID = "Iz3eoyfF0ksboxBgeDWQk9vz";

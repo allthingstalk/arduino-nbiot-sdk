@@ -36,7 +36,7 @@ class CborBuilder {
 
     void addBoolean(bool value, const String asset);
     void addInteger(int value, const String asset);
-    void addNumber(float number, const String asset);
+    void addNumber(double number, const String asset);
     void addString(const String value, const String asset);
     void addGps(int latitude, int longitude, int altitude, const String asset);
 
