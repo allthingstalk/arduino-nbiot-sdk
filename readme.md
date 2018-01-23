@@ -76,4 +76,13 @@ PayloadBuilder payload(nbiot);  // Construct a payload object
 
 Basic example showing all fundamental parts to set up a working example. Send data from the device, over NB-IoT to AllThingsTalk.
 
-* `counter` This example shows how you can send over a simple integer counter using either _json_, _cbor_ or a _binary payload_
+* `counter` This example shows how you can send over a simple integer counter using either _json_, _cbor_ or a _binary payload_.
+
+Simply uncomment your selected method for sending data at the top of the sketch.
+
+```
+// Uncomment your selected methd for sending data
+#define JSON
+//#define CBOR
+//#define BINARY
+```
