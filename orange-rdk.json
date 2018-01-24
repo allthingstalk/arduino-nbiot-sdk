@@ -1,10 +1,9 @@
 {
-  "_id" : "orange_rdk",
+  "_id" : "orange-rdk",
   "Template" : {
     "title" : "Orange NB-IoT kit",
     "description" : "Orange NB-IoT Rapid Development Kit",
     "activityEnabled" : true,
-    "type" : "orange_rdk",
     "assets" : [
       {"name" : "counter", "title" : "Counter", "is" : "sensor", "profile" : { "type" : "integer"}},
       {"name" : "temperature", "title" : "Temperature", "is" : "sensor", "profile" : { "type" : "number", "unit" : "°C"}},

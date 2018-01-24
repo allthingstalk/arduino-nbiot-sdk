@@ -27,7 +27,7 @@ There are three ways to send your data to AllThingsTalk
 * `Cbor payload`
 * `Binary payload`
 
-Standard json will send a single datapoint to a single asset. Both _Cbor_ and _Binary_ allow you to construct your own payload. The former is slightly larger in size, the latter requires a small decoding file [(example)](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/arduino-nbiot-sdk/examples/environmental-sensing/nbiot-environmental-sensing-payload-definition.json) on the receiving end.
+Standard json will send a single datapoint to a single asset. Both _Cbor_ and _Binary_ allow you to construct your own payload. The former is slightly larger in size, the latter requires a small decoding file [(example)](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/examples/counter/nbiot-counter-payload-definition.json) on the receiving end.
 
 #### Single asset
 
