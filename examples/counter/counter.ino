@@ -26,13 +26,11 @@
  */
  
 // Uncomment your selected method for sending data
-#define JSON
-//#define CBOR
+//#define JSON
+#define CBOR
 //#define BINARY
 
 #include "ATT_NBIOT.h"
-#include <CborBuilder.h>
-#include <PayloadBuilder.h>
 
 // Mbili support
 #define DEBUG_STREAM Serial

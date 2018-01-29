@@ -15,9 +15,36 @@ Download the source code and copy the content of the zip file to your arduino li
 
 ## Sending data
 
-### Setting keys
+### Setting device credentials
 
-Open the [`keys.h`](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/keys.h) file on your computer and enter your _deviceid_ and _devicetoken_ of the arduino-nbiot-sdk. You can find these credentials under your device at AllThingsTalk in the _SETTINGS > Authentication_ tab.
+You can set them globally once or locally for use in a specific sketch alone.
+You can find these credentials under your device at AllThingsTalk in the _SETTINGS > Authentication_ tab.
+
+#### Global
+
+Open the [`keys.h`](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/keys.h) file on your computer and enter your _deviceid_ and _devicetoken_ of the arduino-nbiot-sdk. These credentials will be used by any sketch using this sdk.
+
+```
+/****
+ * Enter your AllThingsTalk device credentials below
+ */
+#ifndef KEYS_h
+#define KEYS_h
+const char* DEVICE_ID = "";
+const char* DEVICE_TOKEN = "";
+const char* APN = "iot.orange.be";
+#endif
+```
+
+#### Local
+
+Simply add the following line in the `setup` method of your sketch, with parameters *your_device_id*, *your_device_token* (and _apn_). This will override the global settings if they are set. For example
+
+```
+  nbiot.setAttDevice("Iz3royfF0ksboxBglDWQk3vz", "maker:4LDG64opf84sW1VeVrytwWYzF78tb5nfUinN8Mf1", "iot.orange.be");
+```
+
+> Make sure you add this line _before_  nbiot.connect();
 
 ### Payloads
 
