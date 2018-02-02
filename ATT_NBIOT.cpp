@@ -597,7 +597,7 @@ bool ATT_NBIOT::sendPayload(void* packet, unsigned char size)
  */
 bool ATT_NBIOT::sendCbor(unsigned char* data, unsigned int size)
 {
-  int lng = 72;  // Fixed 72 chars "deviceid\ndevicetoken\n"
+  int lng = strlen(_deviceId) + strlen(_deviceToken) + 2;  // Fixed chars "deviceid\ndevicetoken\n"
 
   // Print AT command
   print("AT+NSOST=0,\"");

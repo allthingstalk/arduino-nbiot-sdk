@@ -1,7 +1,7 @@
 {
-  "_id" : "orange-rdk",
+  "_id" : "nbiot-rdk",
   "Template" : {
-    "title" : "Orange NB-IoT kit",
+    "title" : "NB-IoT kit",
     "description" : "Orange NB-IoT Rapid Development Kit",
     "activityEnabled" : true,
     "assets" : [
