@@ -29,6 +29,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
 {
   public:
     ATT_NBIOT();
+    ATT_NBIOT(const char* deviceId, const char* deviceToken);
 
     enum SentMessageStatus {
       Pending,
@@ -48,7 +49,7 @@ class ATT_NBIOT: public Sodaq_AT_Device
     uint32_t getDefaultBaudrate() { return 9600; };
 
     // Create an instance of an AllThingsTalk device
-    void setAttDevice(const char* deviceid, const char* devicetoken, const char* apn);
+    void setAttDevice(const char* deviceId, const char* deviceToken, const char* apn);
     
     // Initializes the modem instance. Sets the modem and debug stream and the on-off power pins.
     void init(Stream& stream, Stream& debug, int8_t onoffPin);

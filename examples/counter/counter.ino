@@ -39,16 +39,16 @@
 
 #define baud 9600
 
-ATT_NBIOT nbiot;
+ATT_NBIOT device;
 
 #ifdef CBOR
   #include <CborBuilder.h>
-  CborBuilder payload(nbiot);
+  CborBuilder payload(device);
 #endif
 
 #ifdef BINARY
   #include <PayloadBuilder.h>
-  PayloadBuilder payload(nbiot);
+  PayloadBuilder payload(device);
 #endif
 
 
@@ -61,9 +61,9 @@ void setup()
   
   DEBUG_STREAM.println("Initializing and connecting... ");
 
-  nbiot.init(MODEM_STREAM, DEBUG_STREAM, MODEM_ON_OFF_PIN);
+  device.init(MODEM_STREAM, DEBUG_STREAM, MODEM_ON_OFF_PIN);
   
-  if(nbiot.connect())
+  if(device.connect())
     DEBUG_STREAM.println("Connected!");
   else
   {
@@ -79,7 +79,7 @@ void loop()
   if(sendNextAt < millis())
   {
     #ifdef JSON  // Send data using regular json
-    nbiot.sendMessage(counter, "counter");
+    device.sendMessage(counter, "counter");
     #endif
 
     #ifdef CBOR  // Send data using Cbor

@@ -97,14 +97,20 @@ static inline bool is_timedout(uint32_t from, uint32_t nr_ms)
 /****
  * Constructor
  */
-ATT_NBIOT::ATT_NBIOT() :
-  _lastRSSI(0),
-  _CSQtime(0),
-  _minRSSI(-113) // dBm
+ 
+ATT_NBIOT::ATT_NBIOT() : _lastRSSI(0), _CSQtime(0), _minRSSI(-113) // dBm
 {
   // Get credentials from keys.h file
   _deviceId = DEVICE_ID;
   _deviceToken = DEVICE_TOKEN;
+  _apn = APN;
+}
+ 
+ATT_NBIOT::ATT_NBIOT(const char* deviceId, const char* deviceToken) : _lastRSSI(0), _CSQtime(0), _minRSSI(-113) // dBm
+{
+  // Get credentials from keys.h file
+  _deviceId = deviceId;
+  _deviceToken = deviceToken;
   _apn = APN;
 }
 
@@ -122,10 +128,10 @@ bool ATT_NBIOT::isAlive()
 /***
  * Manually set or override the credentials from the keys.h file
  */
-void ATT_NBIOT::setAttDevice(const char* deviceid, const char* devicetoken, const char* apn)
+void ATT_NBIOT::setAttDevice(const char* deviceId, const char* deviceToken, const char* apn)
 {
-  _deviceId = deviceid;
-  _deviceToken = devicetoken;
+  _deviceId = deviceId;
+  _deviceToken = deviceToken;
   _apn = apn;
 }
 

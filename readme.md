@@ -13,16 +13,19 @@ This library has been developed for:
 
 Download the source code and copy the content of the zip file to your arduino libraries folder (usually found at /libraries) _or_ import the .zip file directly using the Arduino IDE.
 
-## Sending data
+## Setting device credentials
 
-### Setting device credentials
+You can either set them **globally**, using the same credentials for all sketches using the sdk.<br>
+Or you can set them **locally** in a specific sketch, overriding the global settings.
 
-You can set them globally once or locally for use in a specific sketch alone.
 You can find these credentials under your device at AllThingsTalk in the _SETTINGS > Authentication_ tab.
 
-#### Global
+Depending on how you initialize the device object in your sketch, the global or local credentials will be used.
 
-Open the [`keys.h`](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/keys.h) file on your computer and enter your _deviceid_ and _devicetoken_ of the arduino-nbiot-sdk. These credentials will be used by any sketch using this sdk.
+* `ATT_NBIOT device("your_device_id", "your_device_token");` will use the provided local credentials.
+* `ATT_NBIOT device;` will use the global credentials from the **keys.h** file
+
+> Open the [`keys.h`](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/keys.h) file on your computer and enter your _deviceid_ and _devicetoken_ of the arduino-nbiot-sdk. These credentials will be used by any sketch using this sdk.
 
 ```
 /****
@@ -36,17 +39,7 @@ const char* APN = "iot.orange.be";
 #endif
 ```
 
-#### Local
-
-Simply add the following line in the `setup` method of your sketch, with parameters *your_device_id*, *your_device_token* (and _apn_). This will override the global settings if they are set. For example
-
-```
-  nbiot.setAttDevice("Iz3royfF0ksboxBglDWQk3vz", "maker:4LDG64opf84sW1VeVrytwWYzF78tb5nfUinN8Mf1", "iot.orange.be");
-```
-
-> Make sure you add this line _before_  nbiot.connect();
-
-### Payloads
+## Payloads and sending data
 
 There are three ways to send your data to AllThingsTalk
 
@@ -56,7 +49,7 @@ There are three ways to send your data to AllThingsTalk
 
 Standard json will send a single datapoint to a single asset. Both _Cbor_ and _Binary_ allow you to construct your own payload. The former is slightly larger in size, the latter requires a small decoding file [(example)](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/examples/counter/nbiot-counter-payload-definition.json) on the receiving end.
 
-#### Single asset
+### Single asset
 
 Send a single datapoint to a single asset using the `send(value, asset)` functions. Value can be any primitive type `integer`, `float`, `boolean` or `String`. For example
 
@@ -68,7 +61,7 @@ ATT_NBIOT nbiot;
   nbiot.send(false, "motion");
 ```
 
-#### Cbor
+### Cbor
 
 ```
 ATT_NBIOT nbiot;
@@ -81,7 +74,7 @@ CborBuilder payload(nbiot);  // Construct a payload object
   payload.send();
 ```
 
-#### Binary payload
+### Binary payload
 
 Using the [AllThingsTalk ABCL language](http://docs.allthingstalk.com/developers/custom-payload-conversion/), you can send a binary string containing datapoints of multiple assets in a single message. The example below shows how you can easily construct and send your own custom payload.
 
@@ -99,7 +92,7 @@ PayloadBuilder payload(nbiot);  // Construct a payload object
   payload.send();
 ```
 
-### Examples
+## Examples
 
 Basic example showing all fundamental parts to set up a working example. Send data from the device, over NB-IoT to AllThingsTalk.
 
