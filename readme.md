@@ -54,18 +54,18 @@ Standard json will send a single datapoint to a single asset. Both _Cbor_ and _B
 Send a single datapoint to a single asset using the `send(value, asset)` functions. Value can be any primitive type `integer`, `float`, `boolean` or `String`. For example
 
 ```
-ATT_NBIOT nbiot;
+ATT_NBIOT device;
 ```
 ```
-  nbiot.send(25, "counter");
-  nbiot.send(false, "motion");
+  device.send(25, "counter");
+  device.send(false, "motion");
 ```
 
 ### Cbor
 
 ```
-ATT_NBIOT nbiot;
-CborBuilder payload(nbiot);  // Construct a payload object
+ATT_NBIOT device;
+CborBuilder payload(device);  // Construct a payload object
 ```
 ```
   payload.reset();
@@ -81,8 +81,8 @@ Using the [AllThingsTalk ABCL language](http://docs.allthingstalk.com/developers
 > Make sure you set the correct decoding file at AllThingsTalk. Please check our documentation and the included experiments for examples.
 
 ```
-ATT_NBIOT nbiot;
-PayloadBuilder payload(nbiot);  // Construct a payload object
+ATT_NBIOT device;
+PayloadBuilder payload(device);  // Construct a payload object
 ```
 ```
   payload.reset();
