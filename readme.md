@@ -25,7 +25,7 @@ Depending on how you initialize the device object in your sketch, the global or 
 * `ATT_NBIOT device("your_device_id", "your_device_token");` will use the provided local credentials.
 * `ATT_NBIOT device;` will use the global credentials from the **keys.h** file
 
-> Open the [`keys.h`](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/keys.h) file on your computer and enter your _deviceid_ and _devicetoken_ of the arduino-nbiot-sdk. These credentials will be used by any sketch using this sdk.
+> Open the [`keys.h`](https://github.com/allthingstalk/arduino-nbiot-sdk/blob/master/keys.h) file of the arduino-nbiot-sdk on your computer and enter your _deviceid_ and _devicetoken_.
 
 ```
 /****
