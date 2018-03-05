@@ -205,8 +205,8 @@ bool ATT_NBIOT::connect()
   const char* forceOperator;  // "20610" for Orange Belgium
 
   // AllThingsTalk endpoint
-  _udp = "52.166.32.29";
-  _port = "12345";
+  _udp = "40.68.172.187";
+  _port = "8891";
   
   if(!on())
     return false;

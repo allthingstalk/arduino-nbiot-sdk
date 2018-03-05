@@ -35,7 +35,7 @@ Depending on how you initialize the device object in your sketch, the global or 
 #define KEYS_h
 const char* DEVICE_ID = "";
 const char* DEVICE_TOKEN = "";
-const char* APN = "iot.orange.be";
+const char* APN = "starter.att.iot";
 #endif
 ```
 
