@@ -37,8 +37,6 @@
 #define MODEM_STREAM Serial1
 #define MODEM_ON_OFF_PIN 23
 
-#define baud 9600
-
 ATT_NBIOT device;
 
 #ifdef CBOR
@@ -56,8 +54,8 @@ void setup()
 {
   delay(3000);
 
-  DEBUG_STREAM.begin(baud);
-  MODEM_STREAM.begin(baud);
+  DEBUG_STREAM.begin(57600);
+  MODEM_STREAM.begin(9600);
   
   DEBUG_STREAM.println("Initializing and connecting... ");
 
