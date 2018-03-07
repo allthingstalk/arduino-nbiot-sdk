@@ -5,5 +5,5 @@
 #define KEYS_h
 const char* DEVICE_ID = "";
 const char* DEVICE_TOKEN = "";
-const char* APN = "start.att.iot";
+const char* APN = "starter.att.iot";
 #endif
