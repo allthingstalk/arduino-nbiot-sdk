@@ -691,6 +691,21 @@ ResponseTypes ATT_NBIOT::readResponse(char* buffer, size_t size,
 
       debugPrint("[rdResp]: ");
       debugPrintLn(buffer);
+      
+      // Handle FOTA URC
+      int param1, param2;
+      if (sscanf(buffer, "+UFOTAS: %d,%d", &param1, &param2) == 2)
+      { 
+        uint16_t blkRm = param1;
+        uint8_t transferStatus = param2;
+
+        debugPrint("Unsolicited: FOTA: ");
+        debugPrint(blkRm);
+        debugPrint(", ");
+        debugPrintLn(transferStatus);
+
+        continue;
+      }
 
       if (startsWith(STR_AT, buffer))
         continue;  // Skip echoed back command
